@@ -267,6 +267,148 @@ if(start!=end)//if there's a selection
 textArea.replaceRange("",start,end);
 }
 });
+replaceMenuItem.addActionListener(ev->{
+JDialog replaceDialog=new JDialog(Notepad.this,"Find",false);
+replaceDialog.getRootPane().registerKeyboardAction(ef->
+replaceDialog.dispose(),KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0),JComponent.WHEN_IN_FOCUSED_WINDOW
+);
+replaceDialog.setSize(415,200);
+
+replaceDialog.setLayout(null);
+JPanel mainPanel=new JPanel();
+mainPanel.setLayout(null);
+mainPanel.setBounds(0,0,295,250);
+JLabel findWhatLabel=new JLabel("Find what : ");
+findWhatLabel.setBounds(10,10,80,20);
+JTextField findField=new JTextField();
+findField.setBounds(90,10,200,20);
+JLabel replaceWithLabel=new JLabel("Replace with : ");
+replaceWithLabel.setBounds(10,40,80,20);
+JTextField replaceField=new JTextField();
+replaceField.setBounds(90,40,200,20);
+mainPanel.add(findWhatLabel);
+mainPanel.add(findField);
+mainPanel.add(replaceWithLabel);
+mainPanel.add(replaceField);
+replaceDialog.add(mainPanel);
+
+JPanel buttonPanel=new JPanel();
+buttonPanel.setLayout(null);
+buttonPanel.setBounds(305,10,100,150);
+JButton findNextButton=new JButton("Find Next");
+findNextButton.setBounds(5,0,85,20);
+JButton replaceButton=new JButton("Replace");
+replaceButton.setBounds(5,30,85,20);
+JButton replaceAllButton=new JButton("Replace All");
+replaceAllButton.setBounds(5,30*2,85,20);
+JButton cancelButton=new JButton("Cancel");
+cancelButton.setBounds(5,30*3,85,20);
+
+buttonPanel.add(findNextButton);
+buttonPanel.add(replaceButton);
+buttonPanel.add(replaceAllButton);
+buttonPanel.add(cancelButton);
+
+replaceDialog.add(buttonPanel);
+
+replaceDialog.getRootPane().setDefaultButton(findNextButton);
+
+
+JCheckBox matchCaseCheckBox=new JCheckBox("Match Case");
+matchCaseCheckBox.setBounds(10,40+65,100,20);
+JCheckBox wrapAroundCheckBox=new JCheckBox("Wrap Around");
+wrapAroundCheckBox.setBounds(10,40+90,100,20);
+
+mainPanel.add(matchCaseCheckBox);
+mainPanel.add(wrapAroundCheckBox);
+
+
+Runnable handleButtonPanel=()->{
+String text=findField.getText();
+if(text.length()!=0) 
+{
+findNextButton.setEnabled(true);
+replaceButton.setEnabled(true);
+replaceAllButton.setEnabled(true);
+}
+else 
+{
+findNextButton.setEnabled(false);
+replaceButton.setEnabled(false);
+replaceAllButton.setEnabled(false);
+}
+};
+
+findField.getDocument().addDocumentListener(
+new DocumentListener(){
+@Override
+public void insertUpdate(DocumentEvent de)
+{
+handleButtonPanel.run();
+}
+@Override
+public void removeUpdate(DocumentEvent de)
+{
+handleButtonPanel.run();
+}
+@Override
+public void changedUpdate(DocumentEvent de)
+{
+handleButtonPanel.run();
+}
+});
+
+
+
+
+findField.addFocusListener(new FocusAdapter(){
+public void focusGained(FocusEvent fe)
+{
+findField.selectAll();
+}
+});
+
+
+
+cancelButton.addActionListener(e->{
+
+replaceDialog.dispose();
+});
+
+
+replaceDialog.setLocationRelativeTo(Notepad.this);
+replaceDialog.setVisible(true);
+
+
+findField.setText(findPreviousSearchedText);
+
+
+String selectedText=textArea.getSelectedText();
+if(selectedText!=null && !selectedText.isEmpty())
+{
+findField.setText(selectedText);
+findPreviousSearchedText=selectedText;
+findField.selectAll();
+}
+
+
+if(findPreviousSearchedText.trim().length()==0) 
+{
+findNextButton.setEnabled(false);
+replaceButton.setEnabled(false);
+replaceAllButton.setEnabled(false);
+}
+/*
+NO NEED WILL REMOVE LATER
+if(findField.getText().trim().length()!=0)
+{
+//SwingUtilities.invokeLater(()->findNextButton.requestFocusInWindow());
+}
+*/	
+
+});
+
+
 findMenuItem.addActionListener(ev->{
 JDialog findDialog=new JDialog(Notepad.this,"Find",false);
 findDialog.getRootPane().registerKeyboardAction(ef->
@@ -334,14 +476,33 @@ directionPanel.add(downRadioButton);
 mainPanel.add(directionPanel);
 
 
-findField.addKeyListener(new KeyAdapter(){
-public void keyTyped(KeyEvent ke)
+findField.getDocument().addDocumentListener(
+new DocumentListener(){
+@Override
+public void insertUpdate(DocumentEvent de)
+{
+String text=findField.getText();
+if(text.length()!=0) findNextButton.setEnabled(true);
+else findNextButton.setEnabled(false);
+}
+@Override
+public void removeUpdate(DocumentEvent de)
+{
+String text=findField.getText();
+if(text.length()!=0) findNextButton.setEnabled(true);
+else findNextButton.setEnabled(false);
+}
+@Override
+public void changedUpdate(DocumentEvent de)
 {
 String text=findField.getText();
 if(text.length()!=0) findNextButton.setEnabled(true);
 else findNextButton.setEnabled(false);
 }
 });
+
+
+
 
 findField.addFocusListener(new FocusAdapter(){
 public void focusGained(FocusEvent fe)
