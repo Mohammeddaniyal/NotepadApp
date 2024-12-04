@@ -13,6 +13,9 @@ private FontChooser fontChooser;
 private String findPreviousSearchedText="";
 private int findPreviousStartIndex=-1;
 private int findPreviousEndIndex=-1;
+private int selectedTextStartIndex=-1;
+private int selectedTextEndIndex=-1;
+private boolean emptyLineField=false;
 private int i=0;
 private static int frameCount=0;
 private boolean firstTime=true;
@@ -51,6 +54,7 @@ UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 {
 
 }
+
 isTextChanged=false;
 newMenuItem=new JMenuItem("New");
 newWindowMenuItem=new JMenuItem("New Window");
@@ -182,6 +186,10 @@ cutMenuItem.setEnabled(false);
 copyMenuItem.setEnabled(false);
 pasteMenuItem.setEnabled(false);
 
+//removing default behaviour of system of ctrl + H as backspace
+textArea.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke("control H"),"none");
+
+
 
 textArea.addCaretListener((ev)->{
 String selectedText=textArea.getSelectedText();
@@ -268,7 +276,8 @@ textArea.replaceRange("",start,end);
 }
 });
 replaceMenuItem.addActionListener(ev->{
-JDialog replaceDialog=new JDialog(Notepad.this,"Find",false);
+JDialog replaceDialog=new JDialog(Notepad.this,"Replace",false);
+//adding escape key for closing the dialog
 replaceDialog.getRootPane().registerKeyboardAction(ef->
 replaceDialog.dispose(),KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0),JComponent.WHEN_IN_FOCUSED_WINDOW
 );
@@ -370,8 +379,61 @@ findField.selectAll();
 
 
 
-cancelButton.addActionListener(e->{
+findNextButton.addActionListener(e->{
+String searchText=findField.getText();
+Notepad.this.findPreviousSearchedText=searchText;
+boolean matchCase=matchCaseCheckBox.isSelected();
+boolean wrapAround=wrapAroundCheckBox.isSelected();
+boolean found=performFind(searchText,matchCase,wrapAround,false,true);//passing false for up direction
+//selectedTextStartIndex=textArea.getSelectionStart();
+//selectedTextEndIndex=textArea.getSelectionEnd();
+System.out.printf("(%d,%d)",selectedTextStartIndex,selectedTextEndIndex);
+});
 
+replaceButton.addActionListener(e->{
+String findText=findField.getText();
+String replaceText=replaceField.getText();
+System.out.println(replaceText);
+System.out.printf("(%d,%d)",selectedTextStartIndex,selectedTextEndIndex);
+
+if(selectedTextStartIndex==-1 && selectedTextEndIndex==-1)
+{
+boolean matchCase=matchCaseCheckBox.isSelected();
+boolean wrapAround=wrapAroundCheckBox.isSelected();
+boolean found=performFind(findText,matchCase,wrapAround,false,true);//passing false for up direction
+if(found==false)return;
+replaceButton.requestFocusInWindow();
+}
+System.out.printf("(%d,%d)",selectedTextStartIndex,selectedTextEndIndex);
+textArea.replaceRange(replaceText,selectedTextStartIndex,selectedTextEndIndex);
+textArea.setCaretPosition(selectedTextStartIndex+replaceText.length());
+System.out.println("Replaced");
+selectedTextStartIndex=-1;
+selectedTextEndIndex=-1;
+});
+
+replaceAllButton.addActionListener(e->{
+textArea.setCaretPosition(0);
+String findText=findField.getText();
+boolean matchCase=matchCaseCheckBox.isSelected();
+boolean wrapAround=wrapAroundCheckBox.isSelected();
+boolean found=performFind(findText,matchCase,wrapAround,false,false);//passing false for up direction, 5th parameter is for enabling text selection
+if(found==false) return;
+textArea.setSelectionStart(0);
+textArea.setSelectionEnd(0);
+String text=textArea.getText();
+String replaceText=replaceField.getText();
+if(matchCase)text=text.replace(findText,replaceText);
+else 
+{
+text=text.replaceAll(findText,replaceText);
+}
+textArea.setText(text);
+textArea.setCaretPosition(0);
+}
+);
+
+cancelButton.addActionListener(e->{
 replaceDialog.dispose();
 });
 
@@ -386,6 +448,8 @@ findField.setText(findPreviousSearchedText);
 String selectedText=textArea.getSelectedText();
 if(selectedText!=null && !selectedText.isEmpty())
 {
+selectedTextStartIndex=textArea.getSelectionStart();
+selectedTextEndIndex=textArea.getSelectionEnd();
 findField.setText(selectedText);
 findPreviousSearchedText=selectedText;
 findField.selectAll();
@@ -398,14 +462,6 @@ findNextButton.setEnabled(false);
 replaceButton.setEnabled(false);
 replaceAllButton.setEnabled(false);
 }
-/*
-NO NEED WILL REMOVE LATER
-if(findField.getText().trim().length()!=0)
-{
-//SwingUtilities.invokeLater(()->findNextButton.requestFocusInWindow());
-}
-*/	
-
 });
 
 
@@ -518,7 +574,7 @@ Notepad.this.findPreviousSearchedText=searchText;
 boolean matchCase=matchCaseCheckBox.isSelected();
 boolean wrapAround=wrapAroundCheckBox.isSelected();
 boolean directionUp=upRadioButton.isSelected();
-performFind(searchText,matchCase,wrapAround,directionUp);
+boolean b=performFind(searchText,matchCase,wrapAround,directionUp,true);
 });
 
 cancelButton.addActionListener(e->{
@@ -527,7 +583,15 @@ findDialog.dispose();
 });
 
 
-findDialog.setLocationRelativeTo(Notepad.this);
+int parentX=Notepad.this.getX();
+int parentY=Notepad.this.getY();
+int parentWidth=Notepad.this.getWidth();
+int parentHeight=Notepad.this.getHeight();
+
+int dialogX=parentX+(parentWidth-findDialog.getWidth())/8;
+int dialogY=parentY+(parentHeight-findDialog.getHeight())/4;
+findDialog.setLocation(dialogX,dialogY);
+//findDialog.setLocationRelativeTo(Notepad.this);
 findDialog.setVisible(true);
 
 
@@ -554,10 +618,116 @@ if(findField.getText().trim().length()!=0)
 });
 
 findNextMenuItem.addActionListener(ev->{
-performFind(findPreviousSearchedText,false,false,false);
+boolean b=performFind(findPreviousSearchedText,false,false,false,true);
 });
-openFile();	
-System.out.println(fileName);
+
+selectAllMenuItem.addActionListener(ev->{
+textArea.selectAll();
+});
+
+
+goToMenuItem.addActionListener(ev->{
+JDialog goToDialog=new JDialog(Notepad.this,"Go To Line",false);
+goToDialog.getRootPane().registerKeyboardAction(ef->
+goToDialog.dispose(),KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0),JComponent.WHEN_IN_FOCUSED_WINDOW
+);
+
+goToDialog.setSize(275,150);
+goToDialog.setLayout(null);
+
+JLabel lineLabel=new JLabel("Line number:");
+lineLabel.setBounds(7,5,200,25);
+JTextField lineField=new JTextField();
+lineField.setBounds(5,30,240,25);
+JButton goToButton=new JButton("Go to");
+goToButton.setBounds(80,70,80,25);
+JButton cancelButton=new JButton("Cancel");
+cancelButton.setBounds(165,70,80,25);
+JToolTip errorToolTip=new JToolTip();
+//Point location=lineField.getLocationOnScreen();
+//errorToolTip.setBounds(location.x,location.y+lineField.getHeight(),100,100);
+errorToolTip.setBounds(20,60,200,20);
+errorToolTip.setTipText("UNACCEPTABLE CHARACTER");
+errorToolTip.setBackground(Color.WHITE);
+errorToolTip.setForeground(Color.RED);
+errorToolTip.setVisible(false);
+goToDialog.add(lineLabel);
+goToDialog.add(lineField);
+goToDialog.add(goToButton);
+goToDialog.add(cancelButton);
+//goToDialog.add(errorToolTip);
+goToDialog.setLocationRelativeTo(Notepad.this);
+goToDialog.setVisible(true);
+goToDialog.getRootPane().setDefaultButton(goToButton);
+goToButton.addActionListener(e->{
+try
+{
+String input=lineField.getText().trim();
+int lineNumber=Integer.parseInt(input);
+
+//validate the line number
+int totalLines=textArea.getLineCount();
+if(lineNumber<1 || lineNumber>totalLines)
+{
+JOptionPane.showMessageDialog(Notepad.this,"The line number is beyond the total line number","My Notepad - Goto Line",JOptionPane.ERROR_MESSAGE);
+return;
+}
+//calculate postion and move caret
+int lineStartOffset=textArea.getLineStartOffset(lineNumber-1);//Line number is 1-based
+textArea.setCaretPosition(lineStartOffset);
+goToDialog.dispose();
+}catch(NumberFormatException numberFormatException)
+{
+//show a tooltip or a popup window
+}
+catch(BadLocationException badLocationException)
+{
+}
+});
+cancelButton.addActionListener(e->{
+goToDialog.dispose();
+});
+
+lineField.addFocusListener(new FocusAdapter(){
+@Override
+public void focusGained(FocusEvent fe)
+{
+if(Notepad.this.emptyLineField)
+{
+Notepad.this.emptyLineField=false;
+lineField.setText("");	
+}
+}
+});
+
+
+lineField.getDocument().addDocumentListener(new DocumentListener(){
+@Override
+public void insertUpdate(DocumentEvent de)
+{
+char c=lineField.getText().charAt(0);
+if(!(c>=48 && c<=57))
+{
+emptyLineField=true;
+JOptionPane.showMessageDialog(goToDialog,"Unacceptable Character\nOnly numbers are allowed","My Notepad - Goto Line",JOptionPane.ERROR_MESSAGE);
+return;
+}
+}
+@Override
+public void removeUpdate(DocumentEvent de)
+{
+}
+@Override
+public void changedUpdate(DocumentEvent de)
+{
+}
+});
+
+});
+
+openFile();	//opening file and appending in textArea
+
+
 saveMenuItem.addActionListener(ev->{
 if(randomAccessFile!=null)
 {
@@ -853,7 +1023,7 @@ else
 dispose();
 }
 }
-private void performFind(String searchText,boolean matchCase,boolean wrapAround,boolean directionUp)
+private boolean performFind(String searchText,boolean matchCase,boolean wrapAround,boolean directionUp,boolean highlight)
 {
 String text=textArea.getText();
 if(!matchCase)
@@ -889,63 +1059,23 @@ int s=index;
 int end=index+searchText.length();
 findPreviousStartIndex=s;
 findPreviousEndIndex=end;
+Notepad.this.selectedTextStartIndex=s;
+Notepad.this.selectedTextEndIndex=end;
+System.out.printf("(%d,%d)",selectedTextStartIndex,selectedTextEndIndex);
 SwingUtilities.invokeLater(()->{
+if(highlight)
+{
 textArea.select(s,end);
 textArea.requestFocusInWindow();
+}
 });
-
-textArea.setCaretPosition(index+(directionUp?0:searchText.length()));
-}else
-{
-int  s=findPreviousStartIndex;
-int end=findPreviousEndIndex;
-SwingUtilities.invokeLater(()->{
-textArea.select(s,end);
-textArea.requestFocusInWindow();
-});
-JOptionPane.showMessageDialog(Notepad.this,"Not Found","My Notepad",JOptionPane.INFORMATION_MESSAGE);
-}
-
-/*
-String text=textArea.getText();
-if(!matchCase)
-{
-searchText=searchText.toLowerCase();
-text=text.toLowerCase();
-}
-int pos=textArea.getCaretPosition();
-int index;
-if(directionUp)
-{
-index=text.lastIndexOf(searchText,pos-1);
-if(index==-1 && wrapAround)
-{
-index=text.lastIndexOf(searchText,text.length());//for starting finding from last
-}
-}else
-{
-index=text.indexOf(searchText,pos);
-if(index==-1 && wrapAround)
-{
-index=text.indexOf(searchText,0);
-}
-}
-if(index!=-1)
-{
-int s=index;
-int end=index+searchText.length();
-SwingUtilities.invokeLater(()->{
-textArea.select(s,end);
-textArea.requestFocusInWindow();
-});
-boolean directionDown=directionUp?false:true;
-textArea.setCaretPosition(index+(directionDown?searchText.length():0));
-
+if(highlight)textArea.setCaretPosition(index+(directionUp?0:searchText.length()));
 }else
 {
 JOptionPane.showMessageDialog(Notepad.this,"Not Found","My Notepad",JOptionPane.INFORMATION_MESSAGE);
+return false;
 }
-*/
+return true;
 }
 private void openFile()
 {
