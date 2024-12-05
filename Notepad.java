@@ -10,6 +10,9 @@ import java.util.*;
 public class Notepad extends JFrame
 {
 private FontChooser fontChooser;
+private int fontSize;
+private final int maxFontSize=60;
+private final int minFontSize=8;
 private String findPreviousSearchedText="";
 private int findPreviousStartIndex=-1;
 private int findPreviousEndIndex=-1;
@@ -151,6 +154,33 @@ viewMenu=new JMenu("View");
 viewMenu.add(zoomMenu);
 viewMenu.add(statusMenuItem);
 
+
+
+//zoomInMenuItem.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control PLUS"),"zoom in");
+
+//zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke("control PLUS"));
+//zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke("control MINUS"));
+
+zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,KeyEvent.CTRL_DOWN_MASK));
+zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,KeyEvent.CTRL_DOWN_MASK));
+
+zoomInMenuItem.addActionListener(ev->{
+if(fontSize<maxFontSize)
+{
+fontSize+=2;//increment font size 
+Font selectedFont=textArea.getFont();
+textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),fontSize));
+}
+});
+zoomOutMenuItem.addActionListener(ev->{
+if(fontSize>minFontSize)
+{
+fontSize-=2;//decrement font size 
+Font selectedFont=textArea.getFont();
+textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),fontSize));
+}
+});
+
 helpMenu=new JMenu("Help");
 
 menuBar=new JMenuBar();
@@ -168,6 +198,8 @@ textArea=new JTextArea();
 fontChooser=new FontChooser(this);
 Font selectedFont=fontChooser.getSelectedFont();
 textArea.setFont(selectedFont);
+fontSize=selectedFont.getSize();
+System.out.println(fontSize);
 this.fileName=fileName;
 scrollPane=new JScrollPane(textArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -385,8 +417,6 @@ Notepad.this.findPreviousSearchedText=searchText;
 boolean matchCase=matchCaseCheckBox.isSelected();
 boolean wrapAround=wrapAroundCheckBox.isSelected();
 boolean found=performFind(searchText,matchCase,wrapAround,false,true);//passing false for up direction
-//selectedTextStartIndex=textArea.getSelectionStart();
-//selectedTextEndIndex=textArea.getSelectionEnd();
 System.out.printf("(%d,%d)",selectedTextStartIndex,selectedTextEndIndex);
 });
 
@@ -848,7 +878,6 @@ closeFrame();
 private boolean askToSaveBeforeOpenNewFile()
 {
 System.out.println(isTextChanged);
-System.out.println("hi");
 if(isTextChanged)
 {
 
