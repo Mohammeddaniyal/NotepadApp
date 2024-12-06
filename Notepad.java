@@ -14,6 +14,8 @@ private int fontSize;
 private final int maxFontSize=60;
 private final int minFontSize=8;
 private String findPreviousSearchedText="";
+private String replacePreviousSearchedText="";
+private boolean findDialogReset=false;
 private int findPreviousStartIndex=-1;
 private int findPreviousEndIndex=-1;
 private int selectedTextStartIndex=-1;
@@ -42,11 +44,14 @@ private JMenuItem replaceMenuItem,goToMenuItem,selectAllMenuItem;
 private JCheckBoxMenuItem wordWrapMenuItem;
 private JMenuItem fontMenuItem;
 private JMenuItem zoomInMenuItem,zoomOutMenuItem;
-private JMenuItem statusMenuItem;
+private JCheckBoxMenuItem statusMenuItem;
+
 private JMenuItem helpMenuItem,aboutMenuItem;
 private JTextArea textArea;
 private JScrollPane scrollPane;
 private Container container;
+private JPanel statusbarPanel;
+private JLabel statusLabel;
 public Notepad(String fileName)
 {
 frameCount++;
@@ -134,6 +139,7 @@ wordWrapMenuItem.addActionListener(ev->{
 boolean isSelected=wordWrapMenuItem.isSelected();
 textArea.setLineWrap(isSelected);
 textArea.setWrapStyleWord(isSelected);
+textArea.setCaretPosition(0);
 });
 fontMenuItem.addActionListener(ev->{
 fontChooser.setVisible(true);
@@ -144,7 +150,8 @@ textArea.setFont(chosenFont);
 }
 });
 
-statusMenuItem=new JMenuItem("Status");
+statusMenuItem=new JCheckBoxMenuItem("Status");
+//statusMenuItem=new JMenuItem("Status");
 zoomInMenuItem=new JMenuItem("Zoom In");
 zoomOutMenuItem=new JMenuItem("Zoom Out");
 zoomMenu=new JMenu("Zoom");
@@ -155,6 +162,11 @@ viewMenu.add(zoomMenu);
 viewMenu.add(statusMenuItem);
 
 
+statusMenuItem.addActionListener(ev->{
+boolean isSelected=statusMenuItem.isSelected();
+if(isSelected)statusbarPanel.setVisible(true);
+else statusbarPanel.setVisible(false);
+});
 
 //zoomInMenuItem.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control PLUS"),"zoom in");
 
@@ -194,6 +206,7 @@ setTitle("My Notepad");
 Image notepadIcon=Toolkit.getDefaultToolkit().getImage("images/icon.png");
 setIconImage(notepadIcon);
 container=getContentPane();
+container.setLayout(new BorderLayout());
 textArea=new JTextArea();
 fontChooser=new FontChooser(this);
 Font selectedFont=fontChooser.getSelectedFont();
@@ -212,7 +225,17 @@ int y=(d.height/2)-(height/2);
 setSize(width,height);
 setLocation(x,y);
 setVisible(true);
-container.add(scrollPane);	
+
+statusbarPanel=new JPanel(new BorderLayout());
+statusbarPanel.setVisible(false);
+statusLabel=new JLabel("Line: 1, Column: 1");
+
+statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
+statusbarPanel.add(statusLabel,BorderLayout.WEST);
+container.add(scrollPane,BorderLayout.CENTER);	
+container.add(statusbarPanel,BorderLayout.SOUTH);
+
+
 undoMenuItem.setEnabled(false);
 cutMenuItem.setEnabled(false);
 copyMenuItem.setEnabled(false);
@@ -228,6 +251,17 @@ String selectedText=textArea.getSelectedText();
 cutMenuItem.setEnabled(selectedText!=null);
 copyMenuItem.setEnabled(selectedText!=null && (!selectedText.isEmpty()));
 deleteMenuItem.setEnabled(selectedText!=null);
+try
+{
+int caretPosition=textArea.getCaretPosition();
+int lineNumber=textArea.getLineOfOffset(caretPosition)+1;//0 based
+//caretPosition-actualPosition gives the column no. because it's continues offset no reset of number from new line it continues, suppose at line one there are 10 char then from line it start counting from 11
+int columnNumber=caretPosition-textArea.getLineStartOffset(lineNumber-1)+1;//-1 because 0 based
+statusLabel.setText("Line: "+lineNumber+", Column: "+columnNumber);
+}catch(BadLocationException badLocationException)
+{
+System.out.println(badLocationException);
+}
 });
 javax.swing.Timer clipBoardChecker=new javax.swing.Timer(500,(ev)->{
 pasteMenuItem.setEnabled(isClipboardAvailable());
@@ -280,7 +314,7 @@ Notepad.this.randomAccessFile=new RandomAccessFile(file,"rw");
 {}
 openFile();
 setTitle(Notepad.this.fileName+" - My Notepad");
-//done
+
 isTextChanged=false;
 }
 });
@@ -409,6 +443,13 @@ findField.selectAll();
 }
 });
 
+replaceField.addFocusListener(new FocusAdapter(){
+public void focusGained(FocusEvent fe)
+{
+replaceField.selectAll();
+}
+});
+
 
 
 findNextButton.addActionListener(e->{
@@ -423,6 +464,7 @@ System.out.printf("(%d,%d)",selectedTextStartIndex,selectedTextEndIndex);
 replaceButton.addActionListener(e->{
 String findText=findField.getText();
 String replaceText=replaceField.getText();
+replacePreviousSearchedText=replaceText;
 System.out.println(replaceText);
 System.out.printf("(%d,%d)",selectedTextStartIndex,selectedTextEndIndex);
 
@@ -467,13 +509,22 @@ cancelButton.addActionListener(e->{
 replaceDialog.dispose();
 });
 
+int parentX=Notepad.this.getX();
+int parentY=Notepad.this.getY();
+int parentWidth=Notepad.this.getWidth();
+int parentHeight=Notepad.this.getHeight();
 
-replaceDialog.setLocationRelativeTo(Notepad.this);
+int dialogX=parentX+(parentWidth-replaceDialog.getWidth())/8;
+int dialogY=parentY+(parentHeight-replaceDialog.getHeight())/4;
+
+replaceDialog.setLocation(dialogX,dialogY);
+
+//replaceDialog.setLocationRelativeTo(Notepad.this);
 replaceDialog.setVisible(true);
 
 
 findField.setText(findPreviousSearchedText);
-
+replaceField.setText(replacePreviousSearchedText);
 
 String selectedText=textArea.getSelectedText();
 if(selectedText!=null && !selectedText.isEmpty())
@@ -500,6 +551,7 @@ JDialog findDialog=new JDialog(Notepad.this,"Find",false);
 findDialog.getRootPane().registerKeyboardAction(ef->
 findDialog.dispose(),KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0),JComponent.WHEN_IN_FOCUSED_WINDOW
 );
+findDialogReset=false;
 findDialog.setSize(400,160);
 
 findDialog.setLayout(null);
@@ -600,7 +652,6 @@ findField.selectAll();
 
 findNextButton.addActionListener(e->{
 String searchText=findField.getText();
-Notepad.this.findPreviousSearchedText=searchText;
 boolean matchCase=matchCaseCheckBox.isSelected();
 boolean wrapAround=wrapAroundCheckBox.isSelected();
 boolean directionUp=upRadioButton.isSelected();
@@ -612,6 +663,15 @@ cancelButton.addActionListener(e->{
 findDialog.dispose();
 });
 
+findDialog.addWindowListener(new WindowAdapter(){
+@Override
+public void windowClosing(WindowEvent e)
+{
+System.out.println("Window is closing");
+findDialogReset=true;
+}
+});
+
 
 int parentX=Notepad.this.getX();
 int parentY=Notepad.this.getY();
@@ -620,6 +680,7 @@ int parentHeight=Notepad.this.getHeight();
 
 int dialogX=parentX+(parentWidth-findDialog.getWidth())/8;
 int dialogY=parentY+(parentHeight-findDialog.getHeight())/4;
+
 findDialog.setLocation(dialogX,dialogY);
 //findDialog.setLocationRelativeTo(Notepad.this);
 findDialog.setVisible(true);
@@ -650,6 +711,11 @@ if(findField.getText().trim().length()!=0)
 findNextMenuItem.addActionListener(ev->{
 boolean b=performFind(findPreviousSearchedText,false,false,false,true);
 });
+
+findPreviousMenuItem.addActionListener(ev->{
+boolean b=performFind(findPreviousSearchedText,false,false,true,true);
+});
+
 
 selectAllMenuItem.addActionListener(ev->{
 textArea.selectAll();
@@ -685,8 +751,17 @@ goToDialog.add(lineLabel);
 goToDialog.add(lineField);
 goToDialog.add(goToButton);
 goToDialog.add(cancelButton);
-//goToDialog.add(errorToolTip);
-goToDialog.setLocationRelativeTo(Notepad.this);
+int parentX=Notepad.this.getX();
+int parentY=Notepad.this.getY();
+int parentWidth=Notepad.this.getWidth();
+int parentHeight=Notepad.this.getHeight();
+
+int dialogX=parentX+(parentWidth-goToDialog.getWidth())/8;
+int dialogY=parentY+(parentHeight-goToDialog.getHeight())/4;
+
+goToDialog.setLocation(dialogX,dialogY);
+
+//goToDialog.setLocationRelativeTo(Notepad.this);
 goToDialog.setVisible(true);
 goToDialog.getRootPane().setDefaultButton(goToButton);
 goToButton.addActionListener(e->{
@@ -1074,7 +1149,10 @@ index=text.lastIndexOf(searchText,text.length());//for starting finding from las
 }
 }else
 {
-textArea.setCaretPosition(textArea.getCaretPosition()+searchText.length());
+//int k=textArea.getCaretPosition()+searchText.length();
+//if(k<text.length())textArea.setCaretPosition(k);
+
+//textArea.setCaretPosition(textArea.getCaretPosition()+searchText.length());
 pos=textArea.getCaretPosition();
 index=text.indexOf(searchText,pos);
 if(index==-1 && wrapAround)
@@ -1101,9 +1179,22 @@ textArea.requestFocusInWindow();
 if(highlight)textArea.setCaretPosition(index+(directionUp?0:searchText.length()));
 }else
 {
+if(findPreviousStartIndex!=-1 && findPreviousSearchedText.equals(searchText) && highlight && findDialogReset==false)
+{
+System.out.println("highlight");
+textArea.select(findPreviousStartIndex,findPreviousEndIndex);
+textArea.requestFocusInWindow();
+}
+else
+{
+findPreviousStartIndex=-1;
+findPreviousEndIndex=-1;
+}
 JOptionPane.showMessageDialog(Notepad.this,"Not Found","My Notepad",JOptionPane.INFORMATION_MESSAGE);
+Notepad.this.findPreviousSearchedText=searchText;
 return false;
 }
+Notepad.this.findPreviousSearchedText=searchText;
 return true;
 }
 private void openFile()
