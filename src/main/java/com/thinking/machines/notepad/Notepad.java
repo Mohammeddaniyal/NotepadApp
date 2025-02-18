@@ -12,7 +12,13 @@ import javax.swing.event.*;
 import java.util.*;
 public class Notepad extends JFrame
 {
+public class Counter
+{
+public int i=0;
+public String originalText="";
+}
 private FontChooser fontChooser;
+String originalText;
 private int fontSize;
 private final int maxFontSize=60;
 private final int minFontSize=8;
@@ -24,16 +30,15 @@ private int findPreviousEndIndex=-1;
 private int selectedTextStartIndex=-1;
 private int selectedTextEndIndex=-1;
 private boolean emptyLineField=false;
-private int i=0;
+private Counter counter;
 private static int frameCount=0;
 private boolean firstTime=true;
-private String fileName;
-private RandomAccessFile randomAccessFile;
-private File file;
+private javax.swing.Timer clipBoardChecker;
 private boolean isTextChanged;
 private UndoManager undoManager;
 private SearchManager searchManager;
 private FileHandler fileHandler;
+private String fileName;
 private JMenuBar menuBar;
 private JMenu fileMenu;
 private JMenu editMenu;
@@ -62,7 +67,6 @@ private JLabel statusLabel;
 public void setFileName(String fileName)
 {
 this.fileName=fileName;
-System.out.println(this.fileName);
 }
 private void initMenus()
 {
@@ -170,6 +174,8 @@ setJMenuBar(menuBar);
 }
 private void initComponents()
 {
+counter=new Counter();
+counter.i=0;
 textArea=new JTextArea();
 fontChooser=new FontChooser(this);
 scrollPane=new JScrollPane(textArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -203,11 +209,8 @@ System.out.println(badLocationException);
 
 
 newMenuItem.addActionListener((ev)->{
-System.out.println(isTextChanged);
-if(isTextChanged)
-{
-fileHandler.askToSaveBeforeOpeningNewFile();
-}
+boolean success=fileHandler.askToSaveBeforeOpeningNewFile(counter,isTextChanged);
+if(success)isTextChanged=false;
 });
 
 
@@ -216,36 +219,22 @@ openNewWindow();
 });
 	
 openMenuItem.addActionListener(ev->{
-if(isTextChanged) if(fileHandler.askToSaveBeforeOpenNewFile()) return;
+if(isTextChanged) if(fileHandler.askToSaveBeforeOpenNewFile(counter)) return;
+boolean success=fileHandler.openFilePrompt();
 
-JFileChooser fileChooser=new JFileChooser();
-fileChooser.setCurrentDirectory(new File("."));
-int result=fileChooser.showOpenDialog(null);
-if(result==JFileChooser.APPROVE_OPTION)
-{
-File selectedFile=fileChooser.getSelectedFile();
-if(selectedFile.isDirectory()) return;
-textArea.setText("");
-//Notepad.this.randomAccessFile.close();
-Notepad.this.file=selectedFile;
-Notepad.this.fileName=Notepad.this.file.getName();
-try
-{
-Notepad.this.randomAccessFile=new RandomAccessFile(file,"rw");
-}catch(IOException ioException)
-{}
-i=fileHandler.openFile();
-setTitle(Notepad.this.fileName+" - My Notepad");
-
+if(success==false) return;
+fileHandler.openFile(counter);
+//originalText=textArea.getText();
 isTextChanged=false;
-}
+Notepad.this.setTitle(fileHandler.getDisplayFileName()+"- My Notepad");
+
 });
 
 
 exitMenuItem.addActionListener((ev)->{
 if(isTextChanged) 
 {
-fileHandler.askToSaveBeforeClose();
+fileHandler.askToSaveBeforeClose(counter);
 }
 closeFrame();
 });
@@ -381,9 +370,10 @@ pasteMenuItem.setEnabled(false);
 textArea.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke("control H"),"none");
 
 
-javax.swing.Timer clipBoardChecker=new javax.swing.Timer(500,(ev)->{
+clipBoardChecker=new javax.swing.Timer(500,(ev)->{
 pasteMenuItem.setEnabled(isClipboardAvailable());
 });
+
 clipBoardChecker.start();
 
 
@@ -391,6 +381,7 @@ textArea.getDocument().addUndoableEditListener(ev->{
 undoManager.addEdit(ev.getEdit());
 undoMenuItem.setEnabled(undoManager.canUndo());
 });
+
 undoMenuItem.addActionListener(ev->{
 if(undoManager.canUndo())
 {
@@ -895,25 +886,38 @@ public void changedUpdate(DocumentEvent de)
 });
 
 });
-
-i=fileHandler.openFile();	//opening file and appending in textArea
-
-
+fileHandler.openFile(counter);	//opening file and appending in textArea
+System.out.println("Original text  : "+counter.originalText);
 saveMenuItem.addActionListener(ev->{
-if(Notepad.this.fileName!=null)
+boolean success=true;
+if(fileHandler.getDisplayFileName()!=null)
 {
-fileHandler.saveFile();
+String s=counter.originalText;
+fileHandler.saveFile(counter);
+System.out.println(counter.originalText);
+System.out.println(s.equals(counter.originalText));
 }
 else
 {
-fileHandler.saveAs();
+success=fileHandler.saveAs(counter);
 }
+if(success)
+{
 // isTextChanged equals true after saving the file make it false because now the file is saved
 this.isTextChanged=false;
-setTitle(Notepad.this.fileName+" - My Notepad");
+if(fileHandler.getDisplayFileName()!=null)setTitle(fileHandler.getDisplayFileName()+" - My Notepad");
+}
 });
 saveAsMenuItem.addActionListener(ev->{
-fileHandler.saveAs();
+
+
+if(fileHandler.saveAs(counter))
+{
+// isTextChanged equals true after saving the file make it false because now the file is saved
+this.isTextChanged=false;
+if(fileHandler.getDisplayFileName()!=null)setTitle(fileHandler.getDisplayFileName()+" - My Notepad");
+}
+
 });
 
 textArea.getDocument().addDocumentListener(
@@ -921,34 +925,39 @@ new DocumentListener(){
 @Override
 public void insertUpdate(DocumentEvent de)
 {
-if(i==0) firstTime=false;
-if(firstTime==false)
-{
-if(Notepad.this.fileName!=null)setTitle("*"+Notepad.this.fileName+" - My Notepad");
-else setTitle("*Untitled - My Notepad");
+//System.out.println("insertUpdate");
+if(counter.i==0) firstTime=false;
+if(firstTime==false) updateTitle();
+counter.i--;
 
-isTextChanged=true;
+
+/*
+if(firstTime==false )
+{
+*/
+//System.out.println("insertupdate");
+//updateTitle();
+/*
 }
-if(i!=0)i--;
-if(i==0)
+if(counter.i!=0)counter.i--;
+if(counter.i==1)
 {
 //document is loaded
 firstTime=false;
 }
+*/
 }
 @Override
 public void removeUpdate(DocumentEvent de)
 {
-if(Notepad.this.fileName!=null)setTitle("*"+Notepad.this.fileName+" - My Notepad");
-else setTitle("*Untitled - My Notepad");
-isTextChanged=true;
+System.out.println("removeUpdate");
+updateTitle();
 }
 @Override
 public void changedUpdate(DocumentEvent de)
 {
-if(Notepad.this.fileName!=null)setTitle("*"+Notepad.this.fileName+" - My Notepad");
-else setTitle("*Untitled - My Notepad");
-isTextChanged=true;
+System.out.println("changedUpdate");
+updateTitle();
 }
 });
 
@@ -956,7 +965,7 @@ addWindowListener(new WindowAdapter(){
 @Override
 public void windowClosing(WindowEvent we)
 {
-if(isTextChanged)fileHandler.askToSaveBeforeClose();
+if(isTextChanged)fileHandler.askToSaveBeforeClose(counter);
 closeFrame();
 }
 });
@@ -996,6 +1005,50 @@ else
 dispose();
 }
 }
+private void updateTitle()
+{
+try
+{
+System.out.println("updateTitle");
+if(fileHandler.getDisplayFileName()!=null )
+{
+if(counter.originalText.equals(textArea.getText())==false) 
+{
+isTextChanged=true;
+setTitle("*"+fileHandler.getDisplayFileName()+" - My Notepad");
+System.out.println("1111");
+}
+else 
+{
+
+setTitle(fileHandler.getDisplayFileName()+" - My Notepad");
+isTextChanged=false;
+System.out.println("2222");
+}
+}
+else 
+{
+if(counter.originalText.equals(textArea.getText())==false) 
+{
+setTitle("*Untitled - My Notepad");
+isTextChanged=true;
+System.out.println("333");
+
+}
+else
+{
+setTitle("Untitled - My Notepad");
+isTextChanged=false;
+System.out.println("4444");
+
+}
+}
+}catch(Exception exception)
+{
+System.out.println(exception);
+}
+}
+
 
 class SearchManager
 {
@@ -1088,10 +1141,6 @@ return false;
 Notepad.this.findPreviousSearchedText=searchText;
 return true;
 }
-
-
-
-
 }
 
 }
