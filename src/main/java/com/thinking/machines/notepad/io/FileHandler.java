@@ -308,6 +308,7 @@ if(!this.file.exists())
 int option=JOptionPane.showConfirmDialog(null,"Cannot find the "+fileName+" file.\n\nDo you want to create a new file?","My Notepad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
 if(option==JOptionPane.YES_OPTION)
 {
+this.file.createNewFile();
 textArea.setText("");
 //new file created
 }
