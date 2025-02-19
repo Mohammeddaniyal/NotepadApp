@@ -17,6 +17,7 @@ public class Counter
 public int i=0;
 public String originalText="";
 }
+private ImageIcon logoIcon;
 private FontChooser fontChooser;
 String originalText;
 private int fontSize;
@@ -184,6 +185,7 @@ statusbarPanel=new JPanel(new BorderLayout());
 undoManager=new UndoManager();
 searchManager=new SearchManager();
 fileHandler=new FileHandler(this,textArea,fileName);
+logoIcon=new ImageIcon(this.getClass().getResource("/icons/icon.png"));
 }
 private void addEventListeners()
 {
@@ -270,7 +272,6 @@ fontMenuItem.addActionListener(ev->{
 fontChooser.setVisible(true);
 Font chosenFont=fontChooser.getSelectedFont();
 if(chosenFont!=null) {
-System.out.println("Selected font : "+chosenFont);
 textArea.setFont(chosenFont);
 }
 });
@@ -307,14 +308,15 @@ textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),fontSiz
 private void setupLayout()
 {
 //setTitle("My Notepad");
-Image notepadIcon=Toolkit.getDefaultToolkit().getImage("images/icon.png");
-setIconImage(notepadIcon);
+//Image notepadIcon=Toolkit.getDefaultToolkit().getImage("images/icon.png");
+
+
+setIconImage(logoIcon.getImage());
 container.setLayout(new BorderLayout());
 
 Font selectedFont=fontChooser.getSelectedFont();
 textArea.setFont(selectedFont);
 fontSize=selectedFont.getSize();
-System.out.println(fontSize);
 Dimension d=Toolkit.getDefaultToolkit().getScreenSize();
 int width=800;
 int height=600;
@@ -508,15 +510,12 @@ Notepad.this.findPreviousSearchedText=searchText;
 boolean matchCase=matchCaseCheckBox.isSelected();
 boolean wrapAround=wrapAroundCheckBox.isSelected();
 boolean found=searchManager.performFind(searchText,matchCase,wrapAround,false,true);//passing false for up direction
-System.out.printf("(%d,%d)",selectedTextStartIndex,selectedTextEndIndex);
 });
 
 replaceButton.addActionListener(e->{
 String findText=findField.getText();
 String replaceText=replaceField.getText();
 replacePreviousSearchedText=replaceText;
-System.out.println(replaceText);
-System.out.printf("(%d,%d)",selectedTextStartIndex,selectedTextEndIndex);
 
 if(selectedTextStartIndex==-1 && selectedTextEndIndex==-1)
 {
@@ -526,10 +525,8 @@ boolean found=searchManager.performFind(findText,matchCase,wrapAround,false,true
 if(found==false)return;
 replaceButton.requestFocusInWindow();
 }
-System.out.printf("(%d,%d)",selectedTextStartIndex,selectedTextEndIndex);
 textArea.replaceRange(replaceText,selectedTextStartIndex,selectedTextEndIndex);
 textArea.setCaretPosition(selectedTextStartIndex+replaceText.length());
-System.out.println("Replaced");
 selectedTextStartIndex=-1;
 selectedTextEndIndex=-1;
 });
@@ -714,8 +711,6 @@ boolean b=searchManager.performFind(searchText,matchCase,wrapAround,directionUp,
 });
 
 cancelButton.addActionListener(e->{
-System.out.println("(Find dialog)Window is closing");
-
 findDialogReset=true;
 findDialog.dispose();
 });
@@ -724,7 +719,6 @@ findDialog.addWindowListener(new WindowAdapter(){
 @Override
 public void windowClosing(WindowEvent e)
 {
-System.out.println("(Find dialog)Window is closing");
 findDialogReset=true;
 }
 });
@@ -887,15 +881,12 @@ public void changedUpdate(DocumentEvent de)
 
 });
 fileHandler.openFile(counter);	//opening file and appending in textArea
-System.out.println("Original text  : "+counter.originalText);
 saveMenuItem.addActionListener(ev->{
 boolean success=true;
 if(fileHandler.getDisplayFileName()!=null)
 {
 String s=counter.originalText;
 fileHandler.saveFile(counter);
-System.out.println(counter.originalText);
-System.out.println(s.equals(counter.originalText));
 }
 else
 {
@@ -925,38 +916,19 @@ new DocumentListener(){
 @Override
 public void insertUpdate(DocumentEvent de)
 {
-//System.out.println("insertUpdate");
 if(counter.i==0) firstTime=false;
 if(firstTime==false) updateTitle();
 counter.i--;
 
-
-/*
-if(firstTime==false )
-{
-*/
-//System.out.println("insertupdate");
-//updateTitle();
-/*
-}
-if(counter.i!=0)counter.i--;
-if(counter.i==1)
-{
-//document is loaded
-firstTime=false;
-}
-*/
 }
 @Override
 public void removeUpdate(DocumentEvent de)
 {
-System.out.println("removeUpdate");
 updateTitle();
 }
 @Override
 public void changedUpdate(DocumentEvent de)
 {
-System.out.println("changedUpdate");
 updateTitle();
 }
 });
@@ -1009,21 +981,18 @@ private void updateTitle()
 {
 try
 {
-System.out.println("updateTitle");
 if(fileHandler.getDisplayFileName()!=null )
 {
 if(counter.originalText.equals(textArea.getText())==false) 
 {
 isTextChanged=true;
 setTitle("*"+fileHandler.getDisplayFileName()+" - My Notepad");
-System.out.println("1111");
 }
 else 
 {
 
 setTitle(fileHandler.getDisplayFileName()+" - My Notepad");
 isTextChanged=false;
-System.out.println("2222");
 }
 }
 else 
@@ -1032,15 +1001,11 @@ if(counter.originalText.equals(textArea.getText())==false)
 {
 setTitle("*Untitled - My Notepad");
 isTextChanged=true;
-System.out.println("333");
-
 }
 else
 {
 setTitle("Untitled - My Notepad");
 isTextChanged=false;
-System.out.println("4444");
-
 }
 }
 }catch(Exception exception)
@@ -1081,9 +1046,7 @@ index=text.lastIndexOf(searchText,text.length());//for starting finding from las
 
 //textArea.setCaretPosition(textArea.getCaretPosition()+searchText.length());
 pos=textArea.getCaretPosition();
-System.out.println("Position "+pos);
 index=text.indexOf(searchText,pos);
-System.out.println("Index : "+index);
 if(index==-1 && wrapAround)
 {
 index=text.indexOf(searchText,0);
@@ -1097,7 +1060,6 @@ findPreviousStartIndex=s;
 findPreviousEndIndex=end;
 Notepad.this.selectedTextStartIndex=s;
 Notepad.this.selectedTextEndIndex=end;
-System.out.printf("(%d,%d)",selectedTextStartIndex,selectedTextEndIndex);
 int l=index;
 int y=searchText.length();
 SwingUtilities.invokeLater(()->{
@@ -1122,7 +1084,6 @@ textArea.getCaret().setSelectionVisible(true);
 {
 if(findPreviousStartIndex!=-1 && findPreviousSearchedText.equals(searchText) && highlight && findDialogReset==false)
 {
-System.out.println("highlight");
 //textArea.select(findPreviousStartIndex,findPreviousEndIndex);
 textArea.setSelectionStart(findPreviousStartIndex);
 textArea.setSelectionEnd(findPreviousEndIndex);
