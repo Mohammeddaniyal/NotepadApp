@@ -1,4 +1,5 @@
 package com.thinking.machines.notepad.io;
+import com.thinking.machines.notepad.exceptions.*;
 import com.thinking.machines.notepad.*;
 import java.io.*;
 import javax.swing.*;
@@ -75,7 +76,7 @@ return false;
 }
 return true;
 }
-public void askToSaveBeforeClose(Notepad.Counter c)
+public boolean askToSaveBeforeClose(Notepad.Counter c)
 {
 int choice;
 String name="";
@@ -85,7 +86,7 @@ else name="Untitled";
 choice=JOptionPane.showConfirmDialog(null,"Do you want to save changes to "+name+" ?","My Notepad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
-if(this.fileName!=null)saveFile(c);
+if(this.fileName!=null) saveFile(c);
 else saveAs(c);
 notepad.closeFrame();
 }
@@ -101,15 +102,14 @@ notepad.setVisible(true);
 }
 else
 {
-//Exit without any confirmation changes
-notepad.closeFrame();
+//do nothing
+notepad.setVisible(true);
 }
-
+return false;
 }
 
 public boolean askToSaveBeforeOpenNewFile(Notepad.Counter c)
 {
-
 int choice;
 String name="";
 if(this.fileName!=null) name=fileName;
@@ -142,7 +142,6 @@ return false;
 
 public boolean askToSaveBeforeOpeningNewFile(Notepad.Counter c,boolean isTextChanged)
 {
-System.out.println("12112");
 boolean success=true;
 if(isTextChanged)
 {
@@ -154,11 +153,9 @@ else name="Untitled";
 choice=JOptionPane.showConfirmDialog(null,"Do you want to save changes to "+name+" ?","My Notepad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
-if(this.fileName!=null)saveFile(c);
+if(this.fileName!=null)success=saveFile(c);
 else success=saveAs(c);
-System.out.println("Success : "+success);
 if(success==false) return success;
-System.out.println("hello bye....");
 this.textArea.setText("");
 }
 else if(choice==JOptionPane.NO_OPTION)
@@ -180,7 +177,6 @@ this.extension=null;
 this.displayFileName=null;
 notepad.setFileName(this.fileName);
 notepad.setTitle("Untitled - My Notepad");
-System.out.println("Hello");
 return success;
 }
 public boolean openFilePrompt()
@@ -194,17 +190,11 @@ File selectedFile=fileChooser.getSelectedFile();
 if(selectedFile.isDirectory()) return false;
 textArea.setText("");
 this.fileName=selectedFile.getName();
-/*
-try
-{
-Notepad.this.randomAccessFile=new RandomAccessFile(file,"rw");
-}catch(IOException ioException)
-{}*/
 return true;
 }
 return false;
 }
-public void saveFile(Notepad.Counter c)
+public boolean saveFile(Notepad.Counter c)
 {
 try
 {
@@ -215,11 +205,17 @@ c.originalText=textArea.getText();
 randomAccessFile.close();
 }catch(IOException io)
 {
+JOptionPane.showMessageDialog(null,"Failed to save the file. Please check permissions and try again.", "Save Error",JOptionPane.ERROR_MESSAGE);
+LogException.log(io);
+return false;
 }
+return true;
 }
 public boolean saveAs(Notepad.Counter c)
 {
 boolean saved=false;
+try
+{
 JFileChooser fileChooser=new JFileChooser();
 fileChooser.setCurrentDirectory(new File("."));
 int result=fileChooser.showSaveDialog(null);
@@ -234,9 +230,6 @@ int choice;
 choice=JOptionPane.showConfirmDialog(fileChooser,selectedFile.getName()+" already exists.\nDo you want to replace it?","Confirm Save As",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
-System.out.println("111");
-try
-{
 RandomAccessFile randomAccessFile=new RandomAccessFile(selectedFile,"rw");
 randomAccessFile.writeBytes(textArea.getText());
 this.file=selectedFile;
@@ -247,59 +240,52 @@ randomAccessFile.close();
 notepad.setFileName(this.fileName);
 notepad.setTitle(this.displayFileName+" - My Notepad");
 saved=true;
-}catch(IOException ioException)
-{
-}
 }
 else if(choice==JOptionPane.NO_OPTION)
 {
-System.out.println("222");
 saveAs(c);
 }
 }// selectedFile exists ends
 else
 {
-try
-{
-System.out.println("333");
 checkFileNameValidity(selectedFile.getName());
 this.file=selectedFile;
 this.fileName=file.getName();
 RandomAccessFile randomAccessFile=new RandomAccessFile(this.file,"rw");
 randomAccessFile.writeBytes(textArea.getText());
 randomAccessFile.close();
-//notepad.setDisplayFileName(this.displayFileName);
 notepad.setFileName(this.fileName);
 notepad.setTitle(fileName+" - My Notepad");
 saved=true;
 
+}
+}
 }catch(IOException ioException)
 {
+saved=false;
+JOptionPane.showMessageDialog(null,"Failed to save the file. Please check permissions and try again.", "Save Error",JOptionPane.ERROR_MESSAGE);
+LogException.log(ioException);
 }
-}
-}
+
 if(saved==true) c.originalText=textArea.getText();
-System.out.println("HELLO");
-System.out.println("444 "+saved);
 return saved;
 }
 
 
 public void openFile(Notepad.Counter c)
 {
+try
+{
 c.i=0;
 c.originalText="";
 RandomAccessFile randomAccessFile=null;
 if(this.fileName==null)
 {
-//notepad.setDisplayFileName(this.displayFileName);
 notepad.setTitle("Untitled"+" - My Notepad");
 }
 else
 {
 
-try
-{
 setExtension();
 setDisplayFileName();
 this.file=new File(fileName);
@@ -337,14 +323,17 @@ textArea.setCaretPosition(caretPosition);
 }
 randomAccessFile.close();
 }
-}catch(IOException exception)
-{
-//do nothing
-}
-//notepad.setDisplayFileName(this.displayFileName);
 notepad.setTitle(this.displayFileName+"- My Notepad");
 }
 notepad.setFileName(this.fileName);
+}catch(IOException exception)
+{
+JOptionPane.showMessageDialog(null, "Failed to open file. Please check if the file exists and try again.", "File Error", JOptionPane.ERROR_MESSAGE);
+notepad.setTitle("Untitled"+" - My Notepad");
+notepad.setFileName(null);
+LogException.log(exception);
+}
+
 }
 
 }
