@@ -1,4 +1,5 @@
 package com.thinking.machines.notepad;
+import com.thinking.machines.notepad.exceptions.*;
 import com.thinking.machines.notepad.ui.*;
 import com.thinking.machines.notepad.io.*;
 import javax.swing.*;
@@ -205,7 +206,8 @@ int columnNumber=caretPosition-textArea.getLineStartOffset(lineNumber-1)+1;//-1 
 statusLabel.setText("Line: "+lineNumber+", Column: "+columnNumber);
 }catch(BadLocationException badLocationException)
 {
-System.out.println(badLocationException);
+JOptionPane.showMessageDialog(null, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+LogException.log(badLocationException);
 }
 });
 
@@ -238,7 +240,6 @@ if(isTextChanged)
 {
 fileHandler.askToSaveBeforeClose(counter);
 }
-closeFrame();
 });
 
 cutMenuItem.addActionListener((ev)->{
@@ -346,7 +347,8 @@ try
 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 }catch(Exception exception)
 {
-
+JOptionPane.showMessageDialog(null, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+LogException.log(exception);
 }
 initComponents();
 initMenus();
@@ -835,9 +837,13 @@ goToDialog.dispose();
 }catch(NumberFormatException numberFormatException)
 {
 //show a tooltip or a popup window
+JOptionPane.showMessageDialog(null, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+LogException.log(numberFormatException);
 }
 catch(BadLocationException badLocationException)
 {
+JOptionPane.showMessageDialog(null, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+LogException.log(badLocationException);
 }
 });
 cancelButton.addActionListener(e->{
@@ -886,7 +892,7 @@ boolean success=true;
 if(fileHandler.getDisplayFileName()!=null)
 {
 String s=counter.originalText;
-fileHandler.saveFile(counter);
+success=fileHandler.saveFile(counter);
 }
 else
 {
@@ -937,8 +943,16 @@ addWindowListener(new WindowAdapter(){
 @Override
 public void windowClosing(WindowEvent we)
 {
-if(isTextChanged)fileHandler.askToSaveBeforeClose(counter);
+boolean close=true;
+if(isTextChanged)close=fileHandler.askToSaveBeforeClose(counter);
+if(close)
+{
 closeFrame();
+}
+else
+{
+Notepad.this.setVisible(true);
+}
 }
 });
 
@@ -1010,7 +1024,8 @@ isTextChanged=false;
 }
 }catch(Exception exception)
 {
-System.out.println(exception);
+JOptionPane.showMessageDialog(null, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+LogException.log(exception);
 }
 }
 
