@@ -81,33 +81,47 @@ return selectedFont;
 }
 public void setFont()
 {
-File file=new File(FONT_DATA);
+try
+{
+String userHome = System.getProperty("user.home");
+File fontDirectory = new File(userHome +File.separator+ "notepadAppData"+File.separator+"fonts");
+if (!fontDirectory.exists()) 
+{
+fontDirectory.mkdirs();
+}
+
+File file = new File(fontDirectory, FONT_DATA);
 if(!file.exists())
 {
 this.fontName="Arial";
 this.fontStyle=0;
-this.fontSize=40;
+this.fontSize=12;
+saveFontInFile();
 }
 else
 {
-try
-{
-RandomAccessFile randomAccessFile=new RandomAccessFile(file,"rw");
+RandomAccessFile randomAccessFile=new RandomAccessFile(file,"r");
 this.fontName=randomAccessFile.readLine();
 this.fontStyle=Integer.parseInt(randomAccessFile.readLine());
 this.fontSize=Integer.parseInt(randomAccessFile.readLine());
 randomAccessFile.close();
-}catch(IOException ioException)
-{}
 }
 this.selectedFont=new Font(fontName,fontStyle,fontSize);
+}catch(IOException ioException)
+{
+}
 }
 private void saveFontInFile()
 {
-System.out.println("Saving into file");
 try
 {
-File file=new File(FONT_DATA);
+String userHome = System.getProperty("user.home");
+File fontDirectory = new File(userHome +File.separator+ "notepadAppData"+File.separator+"fonts");
+if (!fontDirectory.exists()) 
+{
+fontDirectory.mkdirs();
+}
+File file = new File(fontDirectory, FONT_DATA);
 RandomAccessFile randomAccessFile=new RandomAccessFile(file,"rw");
 randomAccessFile.setLength(0);
 randomAccessFile.writeBytes(this.fontName+"\n");
