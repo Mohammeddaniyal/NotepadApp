@@ -1,0 +1,9 @@
+well there's a bug in find well techincally its' happening due to the incorrect postion of caret like it's a glitch for let me exaplina when we do find next downward and after just that when we do upward it remains on the same text because the upward logic is incorrect in this like suppose in first line ive got import and then i again clicked find next then i got import on 2 nd line after that when i try to do find next in upward direction it wont go up and remains in 2nd line import
+to solve this bug what i did this
+{
+pos = textArea.getCaretPosition();
+index = text.lastIndexOf(searchText, pos - 1);
+}
+instead of using this 
+why dont i take caret position if the text is selected or not
+int pos=textArea.getSelectedText()!=null?textArea.getSelectionStart():textArea.getCaretPosition();
