@@ -344,6 +344,10 @@ container.add(statusbarPanel,BorderLayout.SOUTH);
 
 
 }
+private void initUIState()
+{
+
+}
 public Notepad(String fileName)
 {
 this.fileName=fileName;
@@ -358,8 +362,11 @@ LogException.log(exception);
 }
 initComponents();
 initMenus();
+bindShortcutKeys();
 addEventListeners();
+initUIStart();
 setupLayout();
+
 isTextChanged=false;
 
 
