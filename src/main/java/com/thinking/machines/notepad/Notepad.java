@@ -336,7 +336,7 @@ setVisible(true);
 
 statusbarPanel.setVisible(false);
 statusLabel=new JLabel("Line: 1, Column: 1");
-
+statusLabel.setFont(new Font("Segoe UI",Font.PLAIN,13));
 statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
 statusbarPanel.add(statusLabel,BorderLayout.WEST);
 container.add(scrollPane,BorderLayout.CENTER);	
