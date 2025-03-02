@@ -96,6 +96,34 @@ selectAllMenuItem.setAccelerator(KeyStroke.getKeyStroke('A',Toolkit.getDefaultTo
 zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK));
 zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, KeyEvent.CTRL_DOWN_MASK));
 
+
+// adding KeyBindings for offerning better control for handling keyboard events and
+// are more suitable for complexr editors like Notepad
+
+
+InputMap inputMap=textArea.getInputMap();
+ActionMap actionMap=textArea.getActionMap();
+
+// ctrl + backspace (delete previous word)
+
+inputMap.put(KeyStroke.getKeyStroke("control BACK_SPACE"),"delete-previous-word");
+
+actionMap.put("delete-previous-word",new AbstractAction(){
+@Override
+public void actionPerformed(ActionEvent ev)
+{
+try
+{
+int caretPos=textArea.getCaretPosition();
+int prevWordPos=Utilities.getWordStart(textArea,caretPos-1);
+textArea.replaceRange("",prevWordPos,caretPos);
+}catch(BadLocationException ex)
+{
+
+}
+}
+});
+
 }
 private void initMenus()
 {
