@@ -218,6 +218,22 @@ LogException.log(badLocationException);
 });
 
 
+textArea.getDocument().addUndoableEditListener(ev->{
+undoManager.addEdit(ev.getEdit());
+undoMenuItem.setEnabled(undoManager.canUndo());
+}
+);
+
+undoMenuItem.addActionListener(ev->{
+if(undoManager.canUndo())
+{
+undoManager.undo();
+undoMenuItem.setEnabled(undoManager.canUndo());
+}
+});
+
+
+
 newMenuItem.addActionListener((ev)->{
 boolean success=fileHandler.askToSaveBeforeOpeningNewFile(counter,isTextChanged);
 if(success)isTextChanged=false;
@@ -390,19 +406,6 @@ pasteMenuItem.setEnabled(isClipboardAvailable());
 clipBoardChecker.start();
 
 
-textArea.getDocument().addUndoableEditListener(ev->{
-undoManager.addEdit(ev.getEdit());
-undoMenuItem.setEnabled(undoManager.canUndo());
-}
-);
-
-undoMenuItem.addActionListener(ev->{
-if(undoManager.canUndo())
-{
-undoManager.undo();
-undoMenuItem.setEnabled(undoManager.canUndo());
-}
-});
 
 
 replaceMenuItem.addActionListener(ev->{
