@@ -346,6 +346,13 @@ container.add(statusbarPanel,BorderLayout.SOUTH);
 }
 private void initUIState()
 {
+undoMenuItem.setEnabled(false);
+cutMenuItem.setEnabled(false);
+copyMenuItem.setEnabled(false);
+pasteMenuItem.setEnabled(false);
+
+//removing default behaviour of system of ctrl + H as backspace
+textArea.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke("control H"),"none");
 
 }
 public Notepad(String fileName)
@@ -364,7 +371,7 @@ initComponents();
 initMenus();
 bindShortcutKeys();
 addEventListeners();
-initUIStart();
+initUIState();
 setupLayout();
 
 isTextChanged=false;
@@ -374,13 +381,6 @@ isTextChanged=false;
 
 
 
-undoMenuItem.setEnabled(false);
-cutMenuItem.setEnabled(false);
-copyMenuItem.setEnabled(false);
-pasteMenuItem.setEnabled(false);
-
-//removing default behaviour of system of ctrl + H as backspace
-textArea.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke("control H"),"none");
 
 
 clipBoardChecker=new javax.swing.Timer(500,(ev)->{
