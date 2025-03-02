@@ -93,6 +93,9 @@ goToMenuItem.setAccelerator(KeyStroke.getKeyStroke('G',Toolkit.getDefaultToolkit
 selectAllMenuItem.setAccelerator(KeyStroke.getKeyStroke('A',Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
 
 
+zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK));
+zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, KeyEvent.CTRL_DOWN_MASK));
+
 }
 private void initMenus()
 {
@@ -155,8 +158,6 @@ statusMenuItem=new JCheckBoxMenuItem("Status");
 zoomInMenuItem=new JMenuItem("");
 zoomOutMenuItem=new JMenuItem("");
 
-zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK));
-zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, KeyEvent.CTRL_DOWN_MASK));
 
 
 
@@ -292,7 +293,12 @@ else statusbarPanel.setVisible(false);
 
 
 zoomInMenuItem.addActionListener(ev->{
-zoomIn();
+if(fontSize<maxFontSize)
+{
+fontSize+=2;//increment font size 
+Font selectedFont=textArea.getFont();
+textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),fontSize));
+}
 });
 zoomOutMenuItem.addActionListener(ev->{
 if(fontSize>minFontSize)
@@ -305,15 +311,6 @@ textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),fontSiz
 
 
 
-}
-private void zoomIn()
-{
-if(fontSize<maxFontSize)
-{
-fontSize+=2;//increment font size 
-Font selectedFont=textArea.getFont();
-textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),fontSize));
-}
 }
 private void setupLayout()
 {
