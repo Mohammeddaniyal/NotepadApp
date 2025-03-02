@@ -154,11 +154,7 @@ zoomOutMenuItem=new JMenuItem("");
 
 zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK));
 zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, KeyEvent.CTRL_DOWN_MASK));
-//zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS,KeyEvent.CTRL_DOWN_MASK));
-//zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT,KeyEvent.CTRL_DOWN_MASK));
 
-zoomInMenuItem.setText("Zoom In \tCtrl +");
-zoomOutMenuItem.setText("Zoom Out	\tCtrl +");
 
 
 zoomMenu=new JMenu("Zoom");
