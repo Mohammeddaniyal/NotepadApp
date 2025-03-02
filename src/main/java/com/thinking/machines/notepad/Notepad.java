@@ -149,14 +149,17 @@ formatMenu.add(wordWrapMenuItem);
 formatMenu.add(fontMenuItem);
 
 statusMenuItem=new JCheckBoxMenuItem("Status");
-zoomInMenuItem=new JMenuItem("Zoom In");
-zoomOutMenuItem=new JMenuItem("Zoom Out");
+zoomInMenuItem=new JMenuItem("");
+zoomOutMenuItem=new JMenuItem("");
 
-zoomInMenuItem.setText("	Zoom In       Ctrl +");
-zoomOutMenuItem.setText("	Zoom Out    Ctrl -");
+zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK));
+zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, KeyEvent.CTRL_DOWN_MASK));
+//zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS,KeyEvent.CTRL_DOWN_MASK));
+//zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT,KeyEvent.CTRL_DOWN_MASK));
 
-zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS,KeyEvent.CTRL_DOWN_MASK));
-zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT,KeyEvent.CTRL_DOWN_MASK));
+zoomInMenuItem.setText("	Zoom In 		Ctrl +");
+zoomOutMenuItem.setText("	Zoom Out 	Ctrl +");
+
 
 zoomMenu=new JMenu("Zoom");
 zoomMenu.add(zoomInMenuItem);
@@ -290,12 +293,7 @@ else statusbarPanel.setVisible(false);
 
 
 zoomInMenuItem.addActionListener(ev->{
-if(fontSize<maxFontSize)
-{
-fontSize+=2;//increment font size 
-Font selectedFont=textArea.getFont();
-textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),fontSize));
-}
+zoomIn();
 });
 zoomOutMenuItem.addActionListener(ev->{
 if(fontSize>minFontSize)
@@ -308,6 +306,15 @@ textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),fontSiz
 
 
 
+}
+private void zoomIn()
+{
+if(fontSize<maxFontSize)
+{
+fontSize+=2;//increment font size 
+Font selectedFont=textArea.getFont();
+textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),fontSize));
+}
 }
 private void setupLayout()
 {
@@ -360,10 +367,6 @@ setupLayout();
 isTextChanged=false;
 
 
-//zoomInMenuItem.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control PLUS"),"zoom in");
-
-//zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke("control PLUS"));
-//zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke("control MINUS"));
 
 
 
@@ -387,7 +390,8 @@ clipBoardChecker.start();
 textArea.getDocument().addUndoableEditListener(ev->{
 undoManager.addEdit(ev.getEdit());
 undoMenuItem.setEnabled(undoManager.canUndo());
-});
+}
+);
 
 undoMenuItem.addActionListener(ev->{
 if(undoManager.canUndo())
