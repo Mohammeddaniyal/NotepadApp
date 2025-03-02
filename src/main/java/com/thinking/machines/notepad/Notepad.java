@@ -818,6 +818,32 @@ public void changedUpdate(DocumentEvent de)
 
 });
 
+saveMenuItem.addActionListener(ev->{
+boolean success=true;
+if(fileHandler.getDisplayFileName()!=null)
+{
+String s=counter.originalText;
+success=fileHandler.saveFile(counter);
+}
+else
+{
+success=fileHandler.saveAs(counter);
+}
+if(success)
+{
+// isTextChanged equals true after saving the file make it false because now the file is saved
+this.isTextChanged=false;
+if(fileHandler.getDisplayFileName()!=null)setTitle(fileHandler.getDisplayFileName()+" - My Notepad");
+}
+});
+saveAsMenuItem.addActionListener(ev->{
+if(fileHandler.saveAs(counter))
+{
+// isTextChanged equals true after saving the file make it false because now the file is saved
+this.isTextChanged=false;
+if(fileHandler.getDisplayFileName()!=null)setTitle(fileHandler.getDisplayFileName()+" - My Notepad");
+}
+});
 
 
 
@@ -826,7 +852,6 @@ private void setupLayout()
 {
 //setTitle("My Notepad");
 //Image notepadIcon=Toolkit.getDefaultToolkit().getImage("images/icon.png");
-
 
 setIconImage(logoIcon.getImage());
 container.setLayout(new BorderLayout());
@@ -886,36 +911,8 @@ setupLayout();
 isTextChanged=false;
 clipBoardChecker.start();
 fileHandler.openFile(counter);	//opening file and appending in textArea
-saveMenuItem.addActionListener(ev->{
-boolean success=true;
-if(fileHandler.getDisplayFileName()!=null)
-{
-String s=counter.originalText;
-success=fileHandler.saveFile(counter);
-}
-else
-{
-success=fileHandler.saveAs(counter);
-}
-if(success)
-{
-// isTextChanged equals true after saving the file make it false because now the file is saved
-this.isTextChanged=false;
-if(fileHandler.getDisplayFileName()!=null)setTitle(fileHandler.getDisplayFileName()+" - My Notepad");
-}
-});
-saveAsMenuItem.addActionListener(ev->{
 
-
-if(fileHandler.saveAs(counter))
-{
-// isTextChanged equals true after saving the file make it false because now the file is saved
-this.isTextChanged=false;
-if(fileHandler.getDisplayFileName()!=null)setTitle(fileHandler.getDisplayFileName()+" - My Notepad");
-}
-
-});
-
+// important for tracking changes in the textArea
 textArea.getDocument().addDocumentListener(
 new DocumentListener(){
 @Override
@@ -1031,7 +1028,6 @@ LogException.log(exception);
 
 class SearchManager
 {
-
 public boolean performFind(String searchText,boolean matchCase,boolean wrapAround,boolean directionUp,boolean highlight)
 {
 String text=textArea.getText();
