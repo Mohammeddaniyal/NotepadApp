@@ -196,8 +196,6 @@ logoIcon=new ImageIcon(this.getClass().getResource("/icons/icon.png"));
 }
 private void addEventListeners()
 {
-
-
 textArea.addCaretListener((ev)->{
 String selectedText=textArea.getSelectedText();
 cutMenuItem.setEnabled(selectedText!=null);
@@ -215,6 +213,10 @@ statusLabel.setText("Line: "+lineNumber+", Column: "+columnNumber);
 JOptionPane.showMessageDialog(null, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
 LogException.log(badLocationException);
 }
+});
+
+clipBoardChecker=new javax.swing.Timer(500,(ev)->{
+pasteMenuItem.setEnabled(isClipboardAvailable());
 });
 
 
@@ -326,88 +328,6 @@ textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),fontSiz
 });
 
 
-
-}
-private void setupLayout()
-{
-//setTitle("My Notepad");
-//Image notepadIcon=Toolkit.getDefaultToolkit().getImage("images/icon.png");
-
-
-setIconImage(logoIcon.getImage());
-container.setLayout(new BorderLayout());
-
-Font selectedFont=fontChooser.getSelectedFont();
-textArea.setFont(selectedFont);
-fontSize=selectedFont.getSize();
-Dimension d=Toolkit.getDefaultToolkit().getScreenSize();
-int width=800;
-int height=600;
-setSize(width,height);
-int x=(d.width/2)-(width/2);
-int y=(d.height/2)-(height/2);
-setSize(width,height);
-setLocation(x,y);
-setVisible(true);
-
-statusbarPanel.setVisible(false);
-statusLabel=new JLabel("Line: 1, Column: 1");
-statusLabel.setFont(new Font("Segoe UI",Font.PLAIN,13));
-statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
-statusbarPanel.add(statusLabel,BorderLayout.WEST);
-container.add(scrollPane,BorderLayout.CENTER);	
-container.add(statusbarPanel,BorderLayout.SOUTH);
-
-
-}
-private void initUIState()
-{
-undoMenuItem.setEnabled(false);
-cutMenuItem.setEnabled(false);
-copyMenuItem.setEnabled(false);
-pasteMenuItem.setEnabled(false);
-
-//removing default behaviour of system of ctrl + H as backspace
-textArea.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke("control H"),"none");
-
-}
-public Notepad(String fileName)
-{
-this.fileName=fileName;
-frameCount++;
-try
-{
-UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-}catch(Exception exception)
-{
-JOptionPane.showMessageDialog(null, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-LogException.log(exception);
-}
-initComponents();
-initMenus();
-bindShortcutKeys();
-addEventListeners();
-initUIState();
-setupLayout();
-
-isTextChanged=false;
-
-
-
-
-
-
-
-
-clipBoardChecker=new javax.swing.Timer(500,(ev)->{
-pasteMenuItem.setEnabled(isClipboardAvailable());
-});
-
-clipBoardChecker.start();
-
-
-
-
 replaceMenuItem.addActionListener(ev->{
 JDialog replaceDialog=new JDialog(Notepad.this,"Replace",false);
 //adding escape key for closing the dialog
@@ -516,6 +436,77 @@ public void focusGained(FocusEvent fe)
 replaceField.selectAll();
 }
 });
+
+
+
+
+}
+private void setupLayout()
+{
+//setTitle("My Notepad");
+//Image notepadIcon=Toolkit.getDefaultToolkit().getImage("images/icon.png");
+
+
+setIconImage(logoIcon.getImage());
+container.setLayout(new BorderLayout());
+
+Font selectedFont=fontChooser.getSelectedFont();
+textArea.setFont(selectedFont);
+fontSize=selectedFont.getSize();
+Dimension d=Toolkit.getDefaultToolkit().getScreenSize();
+int width=800;
+int height=600;
+setSize(width,height);
+int x=(d.width/2)-(width/2);
+int y=(d.height/2)-(height/2);
+setSize(width,height);
+setLocation(x,y);
+setVisible(true);
+
+statusbarPanel.setVisible(false);
+statusLabel=new JLabel("Line: 1, Column: 1");
+statusLabel.setFont(new Font("Segoe UI",Font.PLAIN,13));
+statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
+statusbarPanel.add(statusLabel,BorderLayout.WEST);
+container.add(scrollPane,BorderLayout.CENTER);	
+container.add(statusbarPanel,BorderLayout.SOUTH);
+
+
+}
+private void initUIState()
+{
+undoMenuItem.setEnabled(false);
+cutMenuItem.setEnabled(false);
+copyMenuItem.setEnabled(false);
+pasteMenuItem.setEnabled(false);
+
+//removing default behaviour of system of ctrl + H as backspace
+textArea.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke("control H"),"none");
+
+}
+public Notepad(String fileName)
+{
+this.fileName=fileName;
+frameCount++;
+try
+{
+UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+}catch(Exception exception)
+{
+JOptionPane.showMessageDialog(null, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+LogException.log(exception);
+}
+initComponents();
+initMenus();
+bindShortcutKeys();
+addEventListeners();
+initUIState();
+setupLayout();
+isTextChanged=false;
+clipBoardChecker.start();
+
+
+
 
 
 
