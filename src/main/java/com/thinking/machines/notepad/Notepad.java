@@ -72,7 +72,6 @@ this.fileName=fileName;
 }
 private void bindShortcutKeys()
 {
-
 newMenuItem.setAccelerator(KeyStroke.getKeyStroke('N',Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
 newWindowMenuItem.setAccelerator(KeyStroke.getKeyStroke('N',KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
 openMenuItem.setAccelerator(KeyStroke.getKeyStroke('O',Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
@@ -117,9 +116,9 @@ try
 int caretPos=textArea.getCaretPosition();
 int prevWordPos=Utilities.getWordStart(textArea,caretPos-1);
 textArea.replaceRange("",prevWordPos,caretPos);
-}catch(BadLocationException ex)
+}catch(BadLocationException badLocationException)
 {
-
+LogException.log(badLocationException);
 }
 }
 });
@@ -127,7 +126,6 @@ textArea.replaceRange("",prevWordPos,caretPos);
 }
 private void initMenus()
 {
-
 newMenuItem=new JMenuItem("New");
 newWindowMenuItem=new JMenuItem("New Window");
 openMenuItem=new JMenuItem("Open");
@@ -772,7 +770,6 @@ int dialogX=parentX+(parentWidth-goToDialog.getWidth())/8;
 int dialogY=parentY+(parentHeight-goToDialog.getHeight())/4;
 
 goToDialog.setLocation(dialogX,dialogY);
-
 //goToDialog.setLocationRelativeTo(Notepad.this);
 goToDialog.setVisible(true);
 goToDialog.getRootPane().setDefaultButton(goToButton);
@@ -872,18 +869,11 @@ this.isTextChanged=false;
 if(fileHandler.getDisplayFileName()!=null)setTitle(fileHandler.getDisplayFileName()+" - My Notepad");
 }
 });
-
-
-
 }
 private void setupLayout()
 {
-//setTitle("My Notepad");
-//Image notepadIcon=Toolkit.getDefaultToolkit().getImage("images/icon.png");
-
 setIconImage(logoIcon.getImage());
 container.setLayout(new BorderLayout());
-
 Font selectedFont=fontChooser.getSelectedFont();
 textArea.setFont(selectedFont);
 fontSize=selectedFont.getSize();
@@ -896,7 +886,6 @@ int y=(d.height/2)-(height/2);
 setSize(width,height);
 setLocation(x,y);
 setVisible(true);
-
 statusbarPanel.setVisible(false);
 statusLabel=new JLabel("Line: 1, Column: 1");
 statusLabel.setFont(new Font("Segoe UI",Font.PLAIN,13));
@@ -904,8 +893,6 @@ statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
 statusbarPanel.add(statusLabel,BorderLayout.WEST);
 container.add(scrollPane,BorderLayout.CENTER);	
 container.add(statusbarPanel,BorderLayout.SOUTH);
-
-
 }
 private void initUIState()
 {
