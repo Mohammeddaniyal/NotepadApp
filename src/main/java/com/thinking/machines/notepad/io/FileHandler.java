@@ -9,6 +9,7 @@ public  class FileHandler
 private static final List<String> knownExtensions = Arrays.asList("txt", "java", "c", "cpp", "py", "html", "css");
 private String extension;
 private String fileName;
+private String baseFileName;
 private String displayFileName;
 private File file;
 private Notepad notepad;
@@ -21,6 +22,7 @@ this.fileName=fileName;
 if(this.fileName!=null)
 {
 this.file=new File(this.fileName);
+this.baseFileName=this.fileName.getName();
 }
 }
 public String getDisplayFileName()
@@ -51,7 +53,7 @@ public void setDisplayFileName()
 String extension=this.extension.toLowerCase();
 if(knownExtensions.contains(extension))
 {
-this.displayFileName=this.fileName.substring(0,this.fileName.lastIndexOf("."));
+this.displayFileName=this.baseFileName.substring(0,this.fileName.lastIndexOf("."));
 }
 else
 {
@@ -285,7 +287,6 @@ notepad.setTitle("Untitled"+" - My Notepad");
 }
 else
 {
-
 setExtension();
 setDisplayFileName();
 this.file=new File(fileName);
