@@ -22,7 +22,7 @@ this.fileName=fileName;
 if(this.fileName!=null)
 {
 this.file=new File(this.fileName);
-this.baseFileName=this.fileName.getName();
+this.baseFileName=this.file.getName();
 }
 }
 public String getDisplayFileName()
@@ -39,12 +39,14 @@ if(dotIndex==this.fileName.length()-1)
 {
 this.extension="txt";
 this.fileName=this.fileName+this.extension;
+this.baseFileName=this.file.getName()+this.extension;
 }
 }
 else 
 {
 this.extension="txt";
 this.fileName=this.fileName+"."+this.extension;
+this.baseFileName=this.file.getName()+"."+this.extension;
 }
 
 }
@@ -53,11 +55,11 @@ public void setDisplayFileName()
 String extension=this.extension.toLowerCase();
 if(knownExtensions.contains(extension))
 {
-this.displayFileName=this.baseFileName.substring(0,this.fileName.lastIndexOf("."));
+this.displayFileName=this.baseFileName.substring(0,this.baseFileName.lastIndexOf("."));
 }
 else
 {
-this.displayFileName=this.fileName;
+this.displayFileName=this.baseFileName;
 }
 
 
