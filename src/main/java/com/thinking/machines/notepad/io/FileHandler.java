@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.util.*;
 public  class FileHandler
 {
+private final static int LINES_PER_LOAD=1000; // load 1000 lines per load
 private static final List<String> knownExtensions = Arrays.asList("txt", "java", "c", "cpp", "py", "html", "css");
 private String extension;
 private String fileName;
