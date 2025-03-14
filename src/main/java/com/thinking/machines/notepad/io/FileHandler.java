@@ -357,6 +357,7 @@ LogException.log(ioException);
 }
 };// SwingWorker anonynmous class ends here
 
+worker.execute();
 
 }
 notepad.setTitle(this.displayFileName+"- Danipad");
