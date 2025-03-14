@@ -283,6 +283,7 @@ public void openFile(Notepad.Counter c)
 {
 try
 {
+if(cachedLines!=null) cachedLines.clear();
 c.i=0;
 c.originalText="";
 BufferedReader bufferedReader=null;
@@ -315,6 +316,26 @@ notepad.closeFrame();
 }
 else
 {
+bufferedReader=new BufferedReader(new FileReader(file));
+
+SwingWorker<Void,String> worker=new SwingWorker<>(){
+@Override
+protected void doInBackground() throws Exception
+{
+String line;
+int count=0;
+while((line=bufferedReader.readLine())!=null && count<LINES_PER_LOAD)
+{
+cachedLines.add(line);
+publish(line);
+count++;
+}
+}
+
+
+};
+
+
 randomAccessFile=new RandomAccessFile(file,"rw");
 int caretPosition=textArea.getCaretPosition();
 while(randomAccessFile.getFilePointer()<randomAccessFile.length())
@@ -328,6 +349,8 @@ textArea.setCaretPosition(caretPosition);
 });
 }
 randomAccessFile.close();
+
+
 }
 notepad.setTitle(this.displayFileName+"- Danipad");
 }
