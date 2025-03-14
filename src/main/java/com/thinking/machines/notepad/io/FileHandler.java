@@ -326,14 +326,33 @@ String line;
 int count=0;
 while((line=bufferedReader.readLine())!=null && count<LINES_PER_LOAD)
 {
+c.i++;
+c.originalText=c.originalText+line+"\n";
 cachedLines.add(line); //store in cache
 publish(line); //publish the readed line to append it on textArea
 count++;
 }
 lastLineRead+=count; //update the last line read
 }
-
-
+@Override
+protectec void process(List<String> chunks)
+{
+for(String line:chunks)
+{
+textArea.append(line+"\n");
+}
+}
+@Override 
+protected void done()
+{
+try
+{
+if(bufferedReader!=null) bufferedReader.close();
+}catch(IOException ioException)
+{
+LogException.log(ioException);
+}
+}
 };// SwingWorker anonynmous class ends here
 
 
