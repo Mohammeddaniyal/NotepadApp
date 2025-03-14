@@ -330,10 +330,11 @@ cachedLines.add(line);
 publish(line);
 count++;
 }
+lastLineRead+=count;
 }
 
 
-};
+};// SwingWorker anonynmous class ends here
 
 
 randomAccessFile=new RandomAccessFile(file,"rw");
