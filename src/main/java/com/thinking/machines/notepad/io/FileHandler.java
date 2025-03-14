@@ -326,11 +326,11 @@ String line;
 int count=0;
 while((line=bufferedReader.readLine())!=null && count<LINES_PER_LOAD)
 {
-cachedLines.add(line);
-publish(line);
+cachedLines.add(line); //store in cache
+publish(line); //publish the readed line to append it on textArea
 count++;
 }
-lastLineRead+=count;
+lastLineRead+=count; //update the last line read
 }
 
 
