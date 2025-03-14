@@ -286,7 +286,6 @@ try
 if(cachedLines!=null) cachedLines.clear();
 c.i=0;
 c.originalText="";
-BufferedReader bufferedReader=null;
 if(this.fileName==null)
 {
 notepad.setTitle("Untitled"+" - Danipad");
@@ -316,7 +315,7 @@ notepad.closeFrame();
 }
 else
 {
-bufferedReader=new BufferedReader(new FileReader(file));
+BufferedReader bufferedReader=new BufferedReader(new FileReader(file));
 
 SwingWorker<Void,String> worker=new SwingWorker<>(){
 @Override
