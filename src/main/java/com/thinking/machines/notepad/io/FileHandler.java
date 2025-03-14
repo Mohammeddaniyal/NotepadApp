@@ -358,21 +358,6 @@ LogException.log(ioException);
 };// SwingWorker anonynmous class ends here
 
 
-randomAccessFile=new RandomAccessFile(file,"rw");
-int caretPosition=textArea.getCaretPosition();
-while(randomAccessFile.getFilePointer()<randomAccessFile.length())
-{
-c.i++;
-String line=randomAccessFile.readLine();
-c.originalText=c.originalText+line+"\n";
-SwingUtilities.invokeLater(()->{
-textArea.append(line+"\n");
-textArea.setCaretPosition(caretPosition);
-});
-}
-randomAccessFile.close();
-
-
 }
 notepad.setTitle(this.displayFileName+"- Danipad");
 }
