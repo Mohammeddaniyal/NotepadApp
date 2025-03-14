@@ -333,6 +333,7 @@ publish(line); //publish the readed line to append it on textArea
 count++;
 }
 lastLineRead+=count; //update the last line read
+return null;
 }
 @Override
 protected void process(List<String> chunks)
