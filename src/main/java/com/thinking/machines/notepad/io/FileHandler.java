@@ -320,7 +320,7 @@ bufferedReader=new BufferedReader(new FileReader(file));
 
 SwingWorker<Void,String> worker=new SwingWorker<>(){
 @Override
-protected void doInBackground() throws Exception
+protected Void doInBackground() throws Exception
 {
 String line;
 int count=0;
