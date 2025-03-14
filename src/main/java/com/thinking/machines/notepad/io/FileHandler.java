@@ -87,7 +87,7 @@ String name="";
 if(this.fileName!=null) name=this.fileName;
 else name="Untitled";
 
-choice=JOptionPane.showConfirmDialog(null,"Do you want to save changes to "+name+" ?","My Notepad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+choice=JOptionPane.showConfirmDialog(null,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
 if(this.fileName!=null) saveFile(c);
@@ -119,7 +119,7 @@ String name="";
 if(this.fileName!=null) name=fileName;
 else name="Untitled";
 
-choice=JOptionPane.showConfirmDialog(null,"Do you want to save changes to "+name+" ?","My Notepad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+choice=JOptionPane.showConfirmDialog(null,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
 if(this.fileName!=null)saveFile(c);
@@ -154,7 +154,7 @@ String name="";
 if(this.fileName!=null) name=displayFileName;
 else name="Untitled";
 
-choice=JOptionPane.showConfirmDialog(null,"Do you want to save changes to "+name+" ?","My Notepad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+choice=JOptionPane.showConfirmDialog(null,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
 if(this.fileName!=null)success=saveFile(c);
@@ -180,7 +180,7 @@ this.fileName=null;
 this.extension=null;
 this.displayFileName=null;
 notepad.setFileName(this.fileName);
-notepad.setTitle("Untitled - My Notepad");
+notepad.setTitle("Untitled - Danipad");
 return success;
 }
 public boolean openFilePrompt()
@@ -242,7 +242,7 @@ setExtension();
 setDisplayFileName();
 randomAccessFile.close();
 notepad.setFileName(this.fileName);
-notepad.setTitle(this.displayFileName+" - My Notepad");
+notepad.setTitle(this.displayFileName+" - Danipad");
 saved=true;
 }
 else if(choice==JOptionPane.NO_OPTION)
@@ -259,7 +259,7 @@ RandomAccessFile randomAccessFile=new RandomAccessFile(this.file,"rw");
 randomAccessFile.writeBytes(textArea.getText());
 randomAccessFile.close();
 notepad.setFileName(this.fileName);
-notepad.setTitle(fileName+" - My Notepad");
+notepad.setTitle(fileName+" - Danipad");
 saved=true;
 
 }
@@ -285,7 +285,7 @@ c.originalText="";
 RandomAccessFile randomAccessFile=null;
 if(this.fileName==null)
 {
-notepad.setTitle("Untitled"+" - My Notepad");
+notepad.setTitle("Untitled"+" - Danipad");
 }
 else
 {
@@ -294,7 +294,7 @@ setDisplayFileName();
 this.file=new File(fileName);
 if(!this.file.exists())
 {
-int option=JOptionPane.showConfirmDialog(null,"Cannot find the "+fileName+" file.\n\nDo you want to create a new file?","My Notepad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
+int option=JOptionPane.showConfirmDialog(null,"Cannot find the "+fileName+" file.\n\nDo you want to create a new file?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
 if(option==JOptionPane.YES_OPTION)
 {
 this.file.createNewFile();
@@ -326,13 +326,13 @@ textArea.setCaretPosition(caretPosition);
 }
 randomAccessFile.close();
 }
-notepad.setTitle(this.displayFileName+"- My Notepad");
+notepad.setTitle(this.displayFileName+"- Danipad");
 }
 notepad.setFileName(this.fileName);
 }catch(IOException exception)
 {
 JOptionPane.showMessageDialog(null, "Failed to open file. Please check if the file exists and try again.", "File Error", JOptionPane.ERROR_MESSAGE);
-notepad.setTitle("Untitled"+" - My Notepad");
+notepad.setTitle("Untitled"+" - Danipad");
 notepad.setFileName(null);
 LogException.log(exception);
 }
