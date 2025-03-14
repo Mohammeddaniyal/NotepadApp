@@ -335,7 +335,7 @@ count++;
 lastLineRead+=count; //update the last line read
 }
 @Override
-protectec void process(List<String> chunks)
+protected void process(List<String> chunks)
 {
 for(String line:chunks)
 {
