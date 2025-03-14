@@ -341,6 +341,8 @@ for(String line:chunks)
 {
 textArea.append(line+"\n");
 }
+//setting caret position at the begining
+textArea.setCaretPosition(0);
 }
 @Override 
 protected void done()
