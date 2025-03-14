@@ -285,7 +285,7 @@ try
 {
 c.i=0;
 c.originalText="";
-RandomAccessFile randomAccessFile=null;
+BufferedReader bufferedReader=null;
 if(this.fileName==null)
 {
 notepad.setTitle("Untitled"+" - Danipad");
