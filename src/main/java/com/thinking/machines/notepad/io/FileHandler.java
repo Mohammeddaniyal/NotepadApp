@@ -17,10 +17,12 @@ private String displayFileName;
 private File file;
 private Notepad notepad;
 private JTextArea textArea;
-public  FileHandler(Notepad notepad,JTextArea textArea,String fileName)
+private JScrollPane scrollPanel;
+public  FileHandler(Notepad notepad,JTextArea textArea,JScrollPane scrollPane,String fileName)
 {
 this.notepad=notepad;
 this.textArea=textArea;
+this.scrollPane=scrollPane;
 this.fileName=fileName;
 if(this.fileName!=null)
 {
