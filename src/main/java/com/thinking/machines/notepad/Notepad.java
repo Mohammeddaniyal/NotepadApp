@@ -217,7 +217,7 @@ container=getContentPane();
 statusbarPanel=new JPanel(new BorderLayout());
 undoManager=new UndoManager();
 searchManager=new SearchManager();
-fileHandler=new FileHandler(this,textArea,fileName);
+fileHandler=new FileHandler(this,textArea,scrollPane,fileName);
 logoIcon=new ImageIcon(this.getClass().getResource("/icons/icon.png"));
 }
 private void addEventListeners()
