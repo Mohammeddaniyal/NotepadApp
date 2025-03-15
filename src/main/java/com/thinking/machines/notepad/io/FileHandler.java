@@ -3,6 +3,8 @@ import com.thinking.machines.notepad.exceptions.*;
 import com.thinking.machines.notepad.*;
 import java.io.*;
 import javax.swing.*;
+import javax.swing.event.*;
+import java.awt.event.*;
 import java.util.*;
 public  class FileHandler
 {
@@ -17,7 +19,7 @@ private String displayFileName;
 private File file;
 private Notepad notepad;
 private JTextArea textArea;
-private JScrollPane scrollPanel;
+private JScrollPane scrollPane;
 public  FileHandler(Notepad notepad,JTextArea textArea,JScrollPane scrollPane,String fileName)
 {
 this.notepad=notepad;
@@ -47,6 +49,46 @@ loadMoreLines();
 }
 }
 });
+}
+private void loadMoreLines()
+{
+SwingWorker<Void,String> worker=new SwingWorker<>(){
+BufferedReader reader;
+@Override
+protected Void doInBackground() throws Exception
+{
+reader=new BufferedReader(new FileReader(FileHandler.this.file));
+String line;
+int count=0;
+while((line=reader.readLine())!=null && count<=LINES_PER_LOAD)
+{
+publish(line);
+count++;
+}
+FileHandler.this.lastLineRead+=count;
+return null;
+}
+@Override 
+protected void process(List<String> chunks)
+{
+for(String line:chunks)
+{
+textArea.append(line+"\n");
+}
+}
+@Override 
+protected void done()
+{
+try
+{
+if(reader!=null) reader.close();
+}catch(IOException ioException)
+{
+LogException.log(ioException);
+}
+}
+};
+worker.execute();
 }
 public String getDisplayFileName()
 {
