@@ -323,13 +323,24 @@ protected Void doInBackground() throws Exception
 {
 String line;
 int count=0;
+List<String> batch=new ArrayList<>();
 while((line=bufferedReader.readLine())!=null && count<LINES_PER_LOAD)
 {
 c.i++;
 c.originalText=c.originalText+line+"\n";
 cachedLines.add(line); //store in cache
-publish(line); //publish the readed line to append it on textArea
+batch.add(line);
+if(count%100==0)
+{
+publish(batch.toArray(new String[0])); //publish the readed line to append it on textArea
+batch.clear();
+}
 count++;
+}
+if(!batch.isEmpty())
+{
+publish(batch.toArray(new String[0])); //publish remaining lines
+batch.clear();
 }
 lastLineRead+=count; //update the last line read
 return null;
