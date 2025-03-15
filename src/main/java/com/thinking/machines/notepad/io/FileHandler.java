@@ -29,6 +29,24 @@ if(this.fileName!=null)
 this.file=new File(this.fileName);
 this.baseFileName=this.file.getName();
 }
+addScrollListener();
+}
+private void addScrollListener()
+{
+scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener()
+{
+@Override public void adjustmentValueChanged(AdjustmentEvent ae)
+{
+JScrollBar bar=scrollPane.getVerticalScrollBar();
+int max=bar.getMaximum();
+int current=bar.getValue()+bar.getVisibleAmount();
+if(current>=max-50)
+{
+//Trigger loading if near the bottom
+loadMoreLines();
+}
+}
+});
 }
 public String getDisplayFileName()
 {
