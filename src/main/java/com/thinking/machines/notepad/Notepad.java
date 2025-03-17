@@ -927,6 +927,10 @@ isTextChanged=false;
 clipBoardChecker.start();
 fileHandler.openFile(counter);	//opening file and appending in textArea
 
+//set default close operation as do nothing
+
+setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
 // important for tracking changes in the textArea
 textArea.getDocument().addDocumentListener(
 new DocumentListener(){
@@ -958,10 +962,12 @@ boolean close=true;
 if(isTextChanged)close=fileHandler.askToSaveBeforeClose(counter);
 if(close)
 {
+System.out.println("closeFrame");
 closeFrame();
 }
 else
 {
+System.out.println("dont closeFrame");
 Notepad.this.setVisible(true);
 }
 }
