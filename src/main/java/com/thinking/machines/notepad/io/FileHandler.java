@@ -30,63 +30,6 @@ this.baseFileName=this.file.getName();
 }
 addScrollListener();
 }
-private void addScrollListener()
-{
-scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener()
-{
-@Override public void adjustmentValueChanged(AdjustmentEvent ae)
-{
-JScrollBar bar=scrollPane.getVerticalScrollBar();
-int max=bar.getMaximum();
-int current=bar.getValue()+bar.getVisibleAmount();
-if(current>=max-50)
-{
-//Trigger loading if near the bottom
-loadMoreLines();
-}
-}
-});
-}
-private void loadMoreLines()
-{
-SwingWorker<Void,String> worker=new SwingWorker<>(){
-BufferedReader reader;
-@Override
-protected Void doInBackground() throws Exception
-{
-reader=new BufferedReader(new FileReader(FileHandler.this.file));
-String line;
-int count=0;
-while((line=reader.readLine())!=null && count<=LINES_PER_LOAD)
-{
-publish(line);
-count++;
-}
-FileHandler.this.lastLineRead+=count;
-return null;
-}
-@Override 
-protected void process(List<String> chunks)
-{
-for(String line:chunks)
-{
-textArea.append(line+"\n");
-}
-}
-@Override 
-protected void done()
-{
-try
-{
-if(reader!=null) reader.close();
-}catch(IOException ioException)
-{
-LogException.log(ioException);
-}
-}
-};
-worker.execute();
-}
 public String getDisplayFileName()
 {
 return this.displayFileName;
@@ -383,7 +326,7 @@ protected Void doInBackground() throws Exception
 String line;
 int count=0;
 List<String> batch=new ArrayList<>();
-while((line=bufferedReader.readLine())!=null && count<LINES_PER_LOAD)
+while((line=bufferedReader.readLine())!=null)
 {
 c.i++;
 c.originalText=c.originalText+line+"\n";
