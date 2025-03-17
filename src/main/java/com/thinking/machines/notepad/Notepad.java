@@ -280,7 +280,7 @@ if(success==false) return;
 fileHandler.openFile(counter);
 //originalText=textArea.getText();
 isTextChanged=false;
-Notepad.this.setTitle(fileHandler.getDisplayFileName()+"- My Notepad");
+Notepad.this.setTitle(fileHandler.getDisplayFileName()+"- DaniPad");
 
 });
 
@@ -788,7 +788,7 @@ int lineNumber=Integer.parseInt(input);
 int totalLines=textArea.getLineCount();
 if(lineNumber<1 || lineNumber>totalLines)
 {
-JOptionPane.showMessageDialog(Notepad.this,"The line number is beyond the total line number","My Notepad - Goto Line",JOptionPane.ERROR_MESSAGE);
+JOptionPane.showMessageDialog(Notepad.this,"The line number is beyond the total line number","DaniPad - Goto Line",JOptionPane.ERROR_MESSAGE);
 return;
 }
 //calculate postion and move caret
@@ -832,7 +832,7 @@ char c=lineField.getText().charAt(0);
 if(!(c>=48 && c<=57))
 {
 emptyLineField=true;
-JOptionPane.showMessageDialog(goToDialog,"Unacceptable Character\nOnly numbers are allowed","My Notepad - Goto Line",JOptionPane.ERROR_MESSAGE);
+JOptionPane.showMessageDialog(goToDialog,"Unacceptable Character\nOnly numbers are allowed","DaniPad - Goto Line",JOptionPane.ERROR_MESSAGE);
 return;
 }
 }
@@ -863,7 +863,7 @@ if(success)
 {
 // isTextChanged equals true after saving the file make it false because now the file is saved
 this.isTextChanged=false;
-if(fileHandler.getDisplayFileName()!=null)setTitle(fileHandler.getDisplayFileName()+" - My Notepad");
+if(fileHandler.getDisplayFileName()!=null)setTitle(fileHandler.getDisplayFileName()+" - DaniPad");
 }
 });
 saveAsMenuItem.addActionListener(ev->{
@@ -871,7 +871,7 @@ if(fileHandler.saveAs(counter))
 {
 // isTextChanged equals true after saving the file make it false because now the file is saved
 this.isTextChanged=false;
-if(fileHandler.getDisplayFileName()!=null)setTitle(fileHandler.getDisplayFileName()+" - My Notepad");
+if(fileHandler.getDisplayFileName()!=null)setTitle(fileHandler.getDisplayFileName()+" - DaniPad");
 }
 });
 }
@@ -1021,12 +1021,12 @@ if(fileHandler.getDisplayFileName()!=null )
 if(counter.originalText.equals(textArea.getText())==false) 
 {
 isTextChanged=true;
-setTitle("*"+fileHandler.getDisplayFileName()+" - My Notepad");
+setTitle("*"+fileHandler.getDisplayFileName()+" - DaniPad");
 }
 else 
 {
 
-setTitle(fileHandler.getDisplayFileName()+" - My Notepad");
+setTitle(fileHandler.getDisplayFileName()+" - DaniPad");
 isTextChanged=false;
 }
 }
@@ -1034,12 +1034,12 @@ else
 {
 if(counter.originalText.equals(textArea.getText())==false) 
 {
-setTitle("*Untitled - My Notepad");
+setTitle("*Untitled - DaniPad");
 isTextChanged=true;
 }
 else
 {
-setTitle("Untitled - My Notepad");
+setTitle("Untitled - DaniPad");
 isTextChanged=false;
 }
 }
@@ -1130,7 +1130,7 @@ else
 findPreviousStartIndex=-1;
 findPreviousEndIndex=-1;
 }
-JOptionPane.showMessageDialog(Notepad.this,"Not Found","My Notepad",JOptionPane.INFORMATION_MESSAGE);
+JOptionPane.showMessageDialog(Notepad.this,"Not Found","DaniPad",JOptionPane.INFORMATION_MESSAGE);
 Notepad.this.findPreviousSearchedText=searchText;
 return false;
 }
