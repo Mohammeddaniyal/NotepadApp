@@ -28,7 +28,6 @@ if(this.fileName!=null)
 this.file=new File(this.fileName);
 this.baseFileName=this.file.getName();
 }
-addScrollListener();
 }
 public String getDisplayFileName()
 {
@@ -285,7 +284,6 @@ public void openFile(Notepad.Counter c)
 {
 try
 {
-if(cachedLines!=null) cachedLines.clear();
 c.i=0;
 c.originalText="";
 if(this.fileName==null)
@@ -330,7 +328,6 @@ while((line=bufferedReader.readLine())!=null)
 {
 c.i++;
 c.originalText=c.originalText+line+"\n";
-cachedLines.add(line); //store in cache
 batch.add(line);
 if(count%100==0)
 {
@@ -344,7 +341,6 @@ if(!batch.isEmpty())
 publish(batch.toArray(new String[0])); //publish remaining lines
 batch.clear();
 }
-lastLineRead+=count; //update the last line read
 return null;
 }
 @Override
