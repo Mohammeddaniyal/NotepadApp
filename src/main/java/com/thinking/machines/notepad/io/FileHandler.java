@@ -258,13 +258,16 @@ else
 {
 checkFileNameValidity(selectedFile.getName());
 this.file=selectedFile;
-this.fileName=file.getName();
+this.fileName=selectedFile.getName();
+setExtension();
+setDisplayFileName();
 RandomAccessFile randomAccessFile=new RandomAccessFile(this.file,"rw");
 randomAccessFile.writeBytes(textArea.getText());
 randomAccessFile.close();
 notepad.setFileName(this.fileName);
-notepad.setTitle(fileName+" - Danipad");
+notepad.setTitle(this.displayFileName+" - Danipad");
 saved=true;
+
 
 }
 }
