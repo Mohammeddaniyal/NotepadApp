@@ -1091,6 +1091,7 @@ index=text.indexOf(searchText,0);
 }
 if(index!=-1)
 {
+scrollPane.getHorizontalScrollBar().setValue(0);
 int s=index;
 int end=index+searchText.length();
 findPreviousStartIndex=s;
@@ -1102,7 +1103,6 @@ int y=searchText.length();
 SwingUtilities.invokeLater(()->{
 if(highlight)
 {
-textArea.setCaretPosition(s);
 textArea.setSelectionStart(s);
 textArea.setSelectionEnd(end);
 textArea.requestFocusInWindow();
