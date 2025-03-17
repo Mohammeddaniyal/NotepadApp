@@ -24,8 +24,7 @@ String originalText;
 private int fontSize;
 private final int maxFontSize=60;
 private final int minFontSize=8;
-private boolean wrapAroundCheckBox;
-private boolean matchCaseCheckBox;
+
 private String findPreviousSearchedText="";
 private String replacePreviousSearchedText="";
 private boolean findDialogReset=false;
@@ -1103,6 +1102,7 @@ int y=searchText.length();
 SwingUtilities.invokeLater(()->{
 if(highlight)
 {
+textArea.setCaretPosition(s);
 textArea.setSelectionStart(s);
 textArea.setSelectionEnd(end);
 textArea.requestFocusInWindow();
@@ -1122,7 +1122,7 @@ textArea.getCaret().setSelectionVisible(true);
 {
 if(findPreviousStartIndex!=-1 && findPreviousSearchedText.equals(searchText) && highlight && findDialogReset==false)
 {
-//textArea.select(findPreviousStartIndex,findPreviousEndIndex);
+textArea.setCaretPosition(findPreviousStartIndex);
 textArea.setSelectionStart(findPreviousStartIndex);
 textArea.setSelectionEnd(findPreviousEndIndex);
 
