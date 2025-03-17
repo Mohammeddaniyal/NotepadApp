@@ -719,6 +719,8 @@ if(findField.getText().trim().length()!=0)
 });
 
 findNextMenuItem.addActionListener(ev->{
+String selectedText=textArea.getSelectedText();
+if(selectedText!=null && selectedText.trim().length()>0) findPreviousSearchedText=selectedText;
 boolean b=searchManager.performFind(findPreviousSearchedText,false,false,false,true);
 });
 
@@ -962,7 +964,6 @@ boolean close=true;
 if(isTextChanged)close=fileHandler.askToSaveBeforeClose(counter);
 if(close)
 {
-System.out.println("closeFrame");
 closeFrame();
 }
 else
