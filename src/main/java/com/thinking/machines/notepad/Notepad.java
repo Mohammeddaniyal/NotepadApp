@@ -24,6 +24,8 @@ String originalText;
 private int fontSize;
 private final int maxFontSize=60;
 private final int minFontSize=8;
+private boolean wrapAroundCheckBox;
+private boolean matchCaseCheckBox;
 private String findPreviousSearchedText="";
 private String replacePreviousSearchedText="";
 private boolean findDialogReset=false;
@@ -554,6 +556,7 @@ replaceAllButton.setEnabled(false);
 
 
 findMenuItem.addActionListener(ev->{
+if(textArea.getDocument().getLength()==0) return;
 JDialog findDialog=new JDialog(Notepad.this,"Find",false);
 //registerKeyboardAction binds the ESC key to an action
 //When the ESC key is pressed, the dialog is sent a WINDOW_CLOSING event, 
