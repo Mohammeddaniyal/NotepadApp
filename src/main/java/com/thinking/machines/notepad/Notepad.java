@@ -275,11 +275,12 @@ openNewWindow();
 	
 openMenuItem.addActionListener(ev->{
 if(isTextChanged) if(fileHandler.askToSaveBeforeOpenNewFile(counter)) return;
+Notepad.this.setTitle(fileHandler.getDisplayFileName()+"- DaniPad");
 boolean success=fileHandler.openFilePrompt();
 
 if(success==false) return;
 fileHandler.openFile(counter);
-//originalText=textArea.getText();
+
 isTextChanged=false;
 Notepad.this.setTitle(fileHandler.getDisplayFileName()+"- DaniPad");
 
