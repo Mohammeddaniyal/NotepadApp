@@ -290,6 +290,7 @@ if(isTextChanged)
 {
 fileHandler.askToSaveBeforeClose(counter);
 }
+closeFrame();
 });
 
 cutMenuItem.addActionListener((ev)->{
@@ -725,6 +726,8 @@ boolean b=searchManager.performFind(findPreviousSearchedText,false,false,false,t
 });
 
 findPreviousMenuItem.addActionListener(ev->{
+String selectedText=textArea.getSelectedText();
+if(selectedText!=null && selectedText.trim().length()>0) findPreviousSearchedText=selectedText;
 boolean b=searchManager.performFind(findPreviousSearchedText,false,false,true,true);
 });
 
