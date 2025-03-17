@@ -35,16 +35,17 @@ return this.displayFileName;
 }
 public void setExtension()
 {
-int dotIndex=fileName.lastIndexOf(".");
+int dotIndex=this.fileName.lastIndexOf(".");
 if(dotIndex!=-1)
 {
-this.extension=fileName.substring(dotIndex+1);
+this.extension=this.fileName.substring(dotIndex+1);
 if(dotIndex==this.fileName.length()-1)
 {
 this.extension="txt";
 this.fileName=this.fileName+this.extension;
 this.baseFileName=this.file.getName()+this.extension;
 }
+this.baseFileName=this.file.getName();
 }
 else 
 {
@@ -52,7 +53,6 @@ this.extension="txt";
 this.fileName=this.fileName+"."+this.extension;
 this.baseFileName=this.file.getName()+"."+this.extension;
 }
-
 }
 public void setDisplayFileName()
 {
@@ -198,6 +198,7 @@ File selectedFile=fileChooser.getSelectedFile();
 if(selectedFile.isDirectory()) return false;
 textArea.setText("");
 this.fileName=selectedFile.getName();
+this.file=selectedFile;
 return true;
 }
 return false;
