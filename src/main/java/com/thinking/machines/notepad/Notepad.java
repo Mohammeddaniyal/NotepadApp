@@ -277,7 +277,9 @@ openMenuItem.addActionListener(ev->{
 if(isTextChanged) 
 {
 if(fileHandler.askToSaveBeforeOpenNewFile(counter)) return;
-Notepad.this.setTitle(fileHandler.getDisplayFileName()+"- DaniPad");
+String displayFileName=fileHandler.getDisplayFileName();
+if(displayFileName==null) displayFileName="Untitled";
+Notepad.this.setTitle(displayFileName+"- DaniPad");
 }
 boolean success=fileHandler.openFilePrompt();
 
