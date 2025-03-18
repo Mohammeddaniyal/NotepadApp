@@ -2,6 +2,8 @@ package com.thinking.machines.notepad;
 import com.thinking.machines.notepad.exceptions.*;
 import com.thinking.machines.notepad.ui.*;
 import com.thinking.machines.notepad.io.*;
+import com.thinking.machines.notepad.models.*;
+import com.thinking.machines.notepad.manager.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -24,8 +26,8 @@ String originalText;
 private int fontSize;
 private final int maxFontSize=60;
 private final int minFontSize=8;
-
-private String findPreviousSearchedText="";
+public Config config=ConfigManager.getConfig();
+private String findPreviousSearchedText=config.lastSearchedText;
 private String replacePreviousSearchedText="";
 private boolean findDialogReset=false;
 private int findPreviousStartIndex=-1;
@@ -218,12 +220,12 @@ container=getContentPane();
 statusbarPanel=new JPanel(new BorderLayout());
 undoManager=new UndoManager();
 searchManager=new SearchManager();
+logoIcon=new ImageIcon(this.getClass().getResource("/icons/icon.png"));
 
 JFrame fakeParent=new JFrame();
 fakeParent.setIconImage(logoIcon.getImage());
 fileHandler=new FileHandler(this,fakeParent,textArea,scrollPane,fileName);
 
-logoIcon=new ImageIcon(this.getClass().getResource("/icons/icon.png"));
 }
 private void addEventListeners()
 {
@@ -285,9 +287,11 @@ String displayFileName=fileHandler.getDisplayFileName();
 if(displayFileName==null) displayFileName="Untitled";
 Notepad.this.setTitle(displayFileName+"- DaniPad");
 }
-boolean success=fileHandler.openFilePrompt();
-
-if(success==false) return;
+boolean []succ=new boolean[2];
+SwingUtilities.invokeLater(()->{
+succ[0]=fileHandler.openFilePrompt();
+});
+if(succ[0]==false) return;
 fileHandler.openFile(counter);
 
 isTextChanged=false;
@@ -326,6 +330,7 @@ textArea.replaceRange("",start,end);
 
 wordWrapMenuItem.addActionListener(ev->{
 boolean isSelected=wordWrapMenuItem.isSelected();
+config.wordWrap=isSelected;
 textArea.setLineWrap(isSelected);
 textArea.setWrapStyleWord(isSelected);
 textArea.setCaretPosition(0);
@@ -343,6 +348,7 @@ textArea.setFont(chosenFont);
 
 statusMenuItem.addActionListener(ev->{
 boolean isSelected=statusMenuItem.isSelected();
+config.statusBar=isSelected;
 if(isSelected)statusbarPanel.setVisible(true);
 else statusbarPanel.setVisible(false);
 });
@@ -418,6 +424,18 @@ JCheckBox matchCaseCheckBox=new JCheckBox("Match Case");
 matchCaseCheckBox.setBounds(10,40+65,100,20);
 JCheckBox wrapAroundCheckBox=new JCheckBox("Wrap Around");
 wrapAroundCheckBox.setBounds(10,40+90,100,20);
+
+matchCaseCheckBox.setSelected(config.matchCase);
+wrapAroundCheckBox.setSelected(config.wrapAround);
+matchCaseCheckBox.addActionListener(ev1->{
+Notepad.this.config.matchCase=matchCaseCheckBox.isSelected();
+});
+
+wrapAroundCheckBox.addActionListener(ev1->{
+Notepad.this.config.wrapAround=wrapAroundCheckBox.isSelected();
+});
+
+
 
 mainPanel.add(matchCaseCheckBox);
 mainPanel.add(wrapAroundCheckBox);
@@ -611,6 +629,21 @@ matchCaseCheckBox.setBounds(10,65,100,20);
 JCheckBox wrapAroundCheckBox=new JCheckBox("Wrap Around");
 wrapAroundCheckBox.setBounds(10,90,100,20);
 
+System.out.println(config.matchCase);
+
+matchCaseCheckBox.setSelected(config.matchCase);
+wrapAroundCheckBox.setSelected(config.wrapAround);
+
+
+matchCaseCheckBox.addActionListener(ev1->{
+Notepad.this.config.matchCase=matchCaseCheckBox.isSelected();
+});
+
+wrapAroundCheckBox.addActionListener(ev1->{
+Notepad.this.config.wrapAround=wrapAroundCheckBox.isSelected();
+});
+
+
 mainPanel.add(matchCaseCheckBox);
 mainPanel.add(wrapAroundCheckBox);
 //findDialog.add(matchCaseCheckBox);
@@ -627,6 +660,17 @@ upRadioButton.setBounds(20+30+10,80,40,20);
 JRadioButton downRadioButton=new JRadioButton("Down",true);
 downRadioButton.setBounds(10+30+20+30+10,80,60,20);
 
+if(config.upDirection) upRadioButton.setSelected(true);
+else downRadioButton.setSelected(true);
+
+upRadioButton.addActionListener(ev2->{
+config.upDirection=upRadioButton.isSelected();
+});
+
+downRadioButton.addActionListener(ev2->{
+config.upDirection=(downRadioButton.isSelected())?false:true;
+});
+
 
 ButtonGroup directionGroup=new ButtonGroup();
 directionGroup.add(upRadioButton);
@@ -636,6 +680,8 @@ directionPanel.add(upRadioButton);
 directionPanel.add(downRadioButton);
 //findDialog.add(directionPanel);
 mainPanel.add(directionPanel);
+
+
 
 
 findField.getDocument().addDocumentListener(
@@ -734,13 +780,13 @@ if(findField.getText().trim().length()!=0)
 findNextMenuItem.addActionListener(ev->{
 String selectedText=textArea.getSelectedText();
 if(selectedText!=null && selectedText.trim().length()>0) findPreviousSearchedText=selectedText;
-boolean b=searchManager.performFind(findPreviousSearchedText,false,false,false,true);
+boolean b=searchManager.performFind(findPreviousSearchedText,config.matchCase,config.wrapAround,false,true);
 });
 
 findPreviousMenuItem.addActionListener(ev->{
 String selectedText=textArea.getSelectedText();
 if(selectedText!=null && selectedText.trim().length()>0) findPreviousSearchedText=selectedText;
-boolean b=searchManager.performFind(findPreviousSearchedText,false,false,true,true);
+boolean b=searchManager.performFind(findPreviousSearchedText,config.matchCase,config.wrapAround,true,true);
 });
 
 
@@ -922,6 +968,12 @@ pasteMenuItem.setEnabled(false);
 textArea.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke("control H"),"none");
 
 }
+private void setConfigSettings()
+{
+if(this.config.wordWrap)wordWrapMenuItem.doClick();
+if(this.config.statusBar)statusMenuItem.doClick();
+
+}
 public Notepad(String fileName)
 {
 this.fileName=fileName;
@@ -940,6 +992,7 @@ bindShortcutKeys();
 addEventListeners();
 initUIState();
 setupLayout();
+setConfigSettings();
 isTextChanged=false;
 clipBoardChecker.start();
 fileHandler.openFile(counter);	//opening file and appending in textArea
@@ -979,11 +1032,13 @@ boolean close=true;
 if(isTextChanged)close=fileHandler.askToSaveBeforeClose(counter);
 if(close)
 {
+config.lastSearchedText=findPreviousSearchedText;
+ConfigManager.setConfig(config);
+ConfigManager.saveConfig();
 closeFrame();
 }
 else
 {
-System.out.println("dont closeFrame");
 Notepad.this.setVisible(true);
 }
 }
