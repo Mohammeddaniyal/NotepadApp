@@ -218,7 +218,11 @@ container=getContentPane();
 statusbarPanel=new JPanel(new BorderLayout());
 undoManager=new UndoManager();
 searchManager=new SearchManager();
-fileHandler=new FileHandler(this,textArea,scrollPane,fileName);
+
+JFrame fakeParent=new JFrame();
+fakeParent.setIconImage(logoIcon.getImage());
+fileHandler=new FileHandler(this,fakeParent,textArea,scrollPane,fileName);
+
 logoIcon=new ImageIcon(this.getClass().getResource("/icons/icon.png"));
 }
 private void addEventListeners()
