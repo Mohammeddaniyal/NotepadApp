@@ -6,8 +6,10 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.event.*;
 import java.util.*;
+import javax.swing.filechooser.*;
 public  class FileHandler
 {
+private JFileChooser fileChooser=new JFileChooser();
 private static final List<String> knownExtensions = Arrays.asList("txt", "java", "c", "cpp", "py", "html", "css");
 private String extension;
 private String fileName;
@@ -30,6 +32,19 @@ if(this.fileName!=null)
 this.file=new File(this.fileName);
 this.baseFileName=this.file.getName();
 }
+fileChooser.setFileView(new FileView() {
+        @Override
+        public Icon getIcon(File f) {
+            try {
+                // Get the system icon safely (avoiding null)
+                Icon icon = FileSystemView.getFileSystemView().getSystemIcon(f);
+                return (icon != null) ? icon : UIManager.getIcon("FileView.fileIcon"); // Fallback icon
+            } catch (Exception e) {
+                return UIManager.getIcon("FileView.fileIcon"); // Fallback to default icon
+            }
+        }
+    });
+
 }
 public String getDisplayFileName()
 {
@@ -191,9 +206,16 @@ return success;
 }
 public boolean openFilePrompt()
 {
-JFileChooser fileChooser=new JFileChooser();
+fileChooser.setFileView(null);
 fileChooser.setCurrentDirectory(new File("."));
-int result=fileChooser.showOpenDialog(fakeParent);
+fileChooser.setFileView(new FileView() {
+    @Override
+    public Icon getIcon(File f) {
+        return UIManager.getIcon("FileView.fileIcon");  // Use default Java icon
+    }
+});
+
+int result=fileChooser.showOpenDialog(null);
 if(result==JFileChooser.APPROVE_OPTION)
 {
 File selectedFile=fileChooser.getSelectedFile();
@@ -201,6 +223,8 @@ if(selectedFile.isDirectory()) return false;
 textArea.setText("");
 this.fileName=selectedFile.getName();
 this.file=selectedFile;
+System.out.println("Selected file name "+this.fileName);
+System.out.println("Absolute path : "+this.file.getAbsolutePath());
 return true;
 }
 return false;
@@ -227,9 +251,9 @@ public boolean saveAs(Notepad.Counter c)
 boolean saved=false;
 try
 {
-JFileChooser fileChooser=new JFileChooser();
+
 fileChooser.setCurrentDirectory(new File("."));
-int result=fileChooser.showSaveDialog(fakeParent);
+ int result=fileChooser.showSaveDialog(fakeParent);
 if(result==JFileChooser.APPROVE_OPTION)
 {
 File selectedFile=fileChooser.getSelectedFile();
