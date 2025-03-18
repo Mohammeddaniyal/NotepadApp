@@ -15,11 +15,13 @@ private String baseFileName;
 private String displayFileName;
 private File file;
 private Notepad notepad;
+private JFrame fakeParent;
 private JTextArea textArea;
 private JScrollPane scrollPane;
-public  FileHandler(Notepad notepad,JTextArea textArea,JScrollPane scrollPane,String fileName)
+public  FileHandler(Notepad notepad,JFrame fakeParent,JTextArea textArea,JScrollPane scrollPane,String fileName)
 {
 this.notepad=notepad;
+this.fakeParent=fakeParent;
 this.textArea=textArea;
 this.scrollPane=scrollPane;
 this.fileName=fileName;
@@ -91,7 +93,7 @@ String name="";
 if(this.fileName!=null) name=this.fileName;
 else name="Untitled";
 
-choice=JOptionPane.showConfirmDialog(null,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+choice=JOptionPane.showConfirmDialog(fakeParent,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
 if(this.fileName!=null) saveFile(c);
@@ -123,7 +125,7 @@ String name="";
 if(this.fileName!=null) name=fileName;
 else name="Untitled";
 
-choice=JOptionPane.showConfirmDialog(null,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+choice=JOptionPane.showConfirmDialog(fakeParent,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
 if(this.fileName!=null)saveFile(c);
@@ -158,7 +160,7 @@ String name="";
 if(this.fileName!=null) name=displayFileName;
 else name="Untitled";
 
-choice=JOptionPane.showConfirmDialog(null,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+choice=JOptionPane.showConfirmDialog(fakeParent,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
 if(this.fileName!=null)success=saveFile(c);
@@ -191,7 +193,7 @@ public boolean openFilePrompt()
 {
 JFileChooser fileChooser=new JFileChooser();
 fileChooser.setCurrentDirectory(new File("."));
-int result=fileChooser.showOpenDialog(null);
+int result=fileChooser.showOpenDialog(fakeParent);
 if(result==JFileChooser.APPROVE_OPTION)
 {
 File selectedFile=fileChooser.getSelectedFile();
@@ -214,7 +216,7 @@ c.originalText=textArea.getText();
 randomAccessFile.close();
 }catch(IOException io)
 {
-JOptionPane.showMessageDialog(null,"Failed to save the file. Please check permissions and try again.", "Save Error",JOptionPane.ERROR_MESSAGE);
+JOptionPane.showMessageDialog(fakeParent,"Failed to save the file. Please check permissions and try again.", "Save Error",JOptionPane.ERROR_MESSAGE);
 LogException.log(io);
 return false;
 }
@@ -227,7 +229,7 @@ try
 {
 JFileChooser fileChooser=new JFileChooser();
 fileChooser.setCurrentDirectory(new File("."));
-int result=fileChooser.showSaveDialog(null);
+int result=fileChooser.showSaveDialog(fakeParent);
 if(result==JFileChooser.APPROVE_OPTION)
 {
 File selectedFile=fileChooser.getSelectedFile();
@@ -275,7 +277,7 @@ saved=true;
 }catch(IOException ioException)
 {
 saved=false;
-JOptionPane.showMessageDialog(null,"Failed to save the file. Please check permissions and try again.", "Save Error",JOptionPane.ERROR_MESSAGE);
+JOptionPane.showMessageDialog(fakeParent,"Failed to save the file. Please check permissions and try again.", "Save Error",JOptionPane.ERROR_MESSAGE);
 LogException.log(ioException);
 }
 
@@ -301,7 +303,7 @@ setDisplayFileName();
 this.file=new File(fileName);
 if(!this.file.exists())
 {
-int option=JOptionPane.showConfirmDialog(null,"Cannot find the "+fileName+" file.\n\nDo you want to create a new file?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
+int option=JOptionPane.showConfirmDialog(fakeParent,"Cannot find the "+fileName+" file.\n\nDo you want to create a new file?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
 if(option==JOptionPane.YES_OPTION)
 {
 this.file.createNewFile();
@@ -378,7 +380,7 @@ notepad.setTitle(this.displayFileName+"- Danipad");
 notepad.setFileName(this.fileName);
 }catch(IOException exception)
 {
-JOptionPane.showMessageDialog(null, "Failed to open file. Please check if the file exists and try again.", "File Error", JOptionPane.ERROR_MESSAGE);
+JOptionPane.showMessageDialog(fakeParent, "Failed to open file. Please check if the file exists and try again.", "File Error", JOptionPane.ERROR_MESSAGE);
 notepad.setTitle("Untitled"+" - Danipad");
 notepad.setFileName(null);
 LogException.log(exception);
