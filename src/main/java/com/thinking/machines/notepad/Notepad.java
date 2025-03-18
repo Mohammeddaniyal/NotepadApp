@@ -629,8 +629,6 @@ matchCaseCheckBox.setBounds(10,65,100,20);
 JCheckBox wrapAroundCheckBox=new JCheckBox("Wrap Around");
 wrapAroundCheckBox.setBounds(10,90,100,20);
 
-System.out.println(config.matchCase);
-
 matchCaseCheckBox.setSelected(config.matchCase);
 wrapAroundCheckBox.setSelected(config.wrapAround);
 
