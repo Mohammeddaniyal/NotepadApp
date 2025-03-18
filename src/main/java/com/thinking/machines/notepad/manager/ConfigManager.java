@@ -50,7 +50,6 @@ config=c;
 }
 public static Config getConfig()
 {
-System.out.println("1212"+config.matchCase);
 return config;
 }
 }//class ends
