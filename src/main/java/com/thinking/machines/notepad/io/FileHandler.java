@@ -12,6 +12,7 @@ public  class FileHandler
 private JFileChooser fileChooser=new JFileChooser();
 private static final List<String> knownExtensions = Arrays.asList("txt", "java", "c", "cpp", "py", "html", "css");
 private String extension;
+private String filePath;
 private String fileName;
 private String baseFileName;
 private String displayFileName;
