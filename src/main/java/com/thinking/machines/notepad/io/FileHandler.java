@@ -281,9 +281,7 @@ this.fileName=selectedFile.getName();
 this.filePath=selectedFile.getAbsolutePath();
 setExtension();
 setDisplayFileName();
-RandomAccessFile randomAccessFile=new RandomAccessFile(this.file,"rw");
-randomAccessFile.writeBytes(textArea.getText());
-randomAccessFile.close();
+saveFile(c);
 notepad.setFileName(this.filePath);
 notepad.setTitle(this.displayFileName+" - Danipad");
 saved=true;
@@ -291,11 +289,11 @@ saved=true;
 
 }
 }
-}catch(IOException ioException)
+}catch(Exception exception)
 {
 saved=false;
 JOptionPane.showMessageDialog(fakeParent,"Failed to save the file. Please check permissions and try again.", "Save Error",JOptionPane.ERROR_MESSAGE);
-LogException.log(ioException);
+LogException.log(exception);
 }
 
 
