@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterJob;
+import java.awt.print.PrinterException;
+import java.awt.print.Printable;
 import java.awt.event.*;
 import java.awt.datatransfer.*;
 import javax.swing.undo.*;
@@ -21,9 +23,9 @@ public class Counter
 {
 public boolean suppressChangeEvents=false;
 }
+private JFrame fakeParent;
 private ImageIcon logoIcon;
 private FontChooser fontChooser;
-
 private int fontSize;
 private final int maxFontSize=60;
 private final int minFontSize=8;
@@ -222,9 +224,9 @@ undoManager=new UndoManager();
 searchManager=new SearchManager();
 logoIcon=new ImageIcon(this.getClass().getResource("/icons/icon.png"));
 
-JFrame fakeParent=new JFrame();
-fakeParent.setIconImage(logoIcon.getImage());
 fileHandler=new FileHandler(this,fakeParent,textArea,scrollPane,fileName);
+fakeParent=new JFrame();
+fakeParent.setIconImage(logoIcon.getImage());
 
 }
 private void addEventListeners()
@@ -236,9 +238,29 @@ printerJob.setPrintable((graphics,pageFormat,pageIndex)->{
 
 if(pageIndex>0) return Printable.NO_SUCH_PAGE; //only one page for printing now
 
-Graphics2d g2d=(Graphics2D)graphics;
+Graphics2D g2d=(Graphics2D)graphics;
 
+//adjust for margins
+g2d.translate(pageFormat.getImageableX(),pageFormat.getImageableY());
+
+//scale content if necessary
+g2d.setFont(textArea.getFont());
+textArea.printAll(graphics);//print JTextArea content
+
+return Printable.PAGE_EXISTS;
 });
+//show print dialog
+if(printerJob.printDialog())
+{
+try
+{
+printerJob.print();
+}catch(PrinterException printerException)
+{
+LogException.log(printerException);
+JOptionPane.showMessageDialog(fakeParent,"Printing failed, try again later","Print Error",JOptionPane.ERROR_MESSAGE);
+}
+}
 });
 
 pageSetupMenuItem.addActionListener(ev->{
