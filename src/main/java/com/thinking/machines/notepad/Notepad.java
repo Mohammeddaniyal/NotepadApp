@@ -285,12 +285,9 @@ String displayFileName=fileHandler.getDisplayFileName();
 if(displayFileName==null) displayFileName="Untitled";
 Notepad.this.setTitle(displayFileName+"- DaniPad");
 }
-boolean []succ=new boolean[2];
-SwingUtilities.invokeLater(()->{
-succ[0]=fileHandler.openFilePrompt();
-});
-System.out.println(succ[0]);
-if(succ[0]==false) return;
+boolean success=true;
+success=fileHandler.openFilePrompt();
+if(success==false) return;
 fileHandler.openFile(counter);
 
 isTextChanged=false;
