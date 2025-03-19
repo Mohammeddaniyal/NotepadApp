@@ -17,7 +17,7 @@ public class Notepad extends JFrame
 {
 public class Counter
 {
-public boolean suppressChangeEvents;
+public boolean suppressChangeEvents=false;
 public int i=0;
 public String originalText="";
 }
@@ -1006,20 +1006,22 @@ new DocumentListener(){
 @Override
 public void insertUpdate(DocumentEvent de)
 {
+if(!counter.suppressChangeEvents) updateTitle();
+/*
 if(counter.i==0) firstTime=false;
 if(firstTime==false) updateTitle();
 counter.i--;
-
+*/
 }
 @Override
 public void removeUpdate(DocumentEvent de)
 {
-updateTitle();
+if(!counter.suppressChangeEvents) updateTitle();
 }
 @Override
 public void changedUpdate(DocumentEvent de)
 {
-updateTitle();
+if(!counter.suppressChangeEvents) updateTitle();
 }
 });
 
@@ -1080,8 +1082,20 @@ dispose();
 }
 private void updateTitle()
 {
+System.out.println("Bye");
+isTextChanged=true;
+if(fileHandler.getDisplayFileName()!=null )
+{
+setTitle("*"+fileHandler.getDisplayFileName()+" - DaniPad");
+}
+else
+{
+setTitle("*Untitled - DaniPad");
+}
+/*
 try
 {
+System.out.println("Ehllo");
 if(fileHandler.getDisplayFileName()!=null )
 {
 if(counter.originalText.equals(textArea.getText())==false) 
@@ -1114,6 +1128,7 @@ isTextChanged=false;
 JOptionPane.showMessageDialog(null, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
 LogException.log(exception);
 }
+*/
 }
 
 
