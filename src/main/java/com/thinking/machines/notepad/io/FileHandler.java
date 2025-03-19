@@ -21,16 +21,16 @@ private Notepad notepad;
 private JFrame fakeParent;
 private JTextArea textArea;
 private JScrollPane scrollPane;
-public  FileHandler(Notepad notepad,JFrame fakeParent,JTextArea textArea,JScrollPane scrollPane,String fileName)
+public  FileHandler(Notepad notepad,JFrame fakeParent,JTextArea textArea,JScrollPane scrollPane,String filePath)
 {
 this.notepad=notepad;
 this.fakeParent=fakeParent;
 this.textArea=textArea;
 this.scrollPane=scrollPane;
-this.fileName=fileName;
-if(this.fileName!=null)
+this.filePath=filePath;
+if(this.filePath!=null)
 {
-this.file=new File(this.fileName);
+this.file=new File(this.filePath);
 this.baseFileName=this.file.getName();
 }
 fileChooser.setFileView(new FileView() {
@@ -53,14 +53,14 @@ return this.displayFileName;
 }
 public void setExtension()
 {
-int dotIndex=this.fileName.lastIndexOf(".");
+int dotIndex=this.filePath.lastIndexOf(".");
 if(dotIndex!=-1)
 {
-this.extension=this.fileName.substring(dotIndex+1);
-if(dotIndex==this.fileName.length()-1)
+this.extension=this.filePath.substring(dotIndex+1);
+if(dotIndex==this.filePath.length()-1)
 {
 this.extension="txt";
-this.fileName=this.fileName+this.extension;
+this.filePath=this.filePath+this.extension;
 this.baseFileName=this.file.getName()+this.extension;
 }
 this.baseFileName=this.file.getName();
@@ -68,7 +68,7 @@ this.baseFileName=this.file.getName();
 else 
 {
 this.extension="txt";
-this.fileName=this.fileName+"."+this.extension;
+this.filePath=this.filePath+"."+this.extension;
 this.baseFileName=this.file.getName()+"."+this.extension;
 }
 }
@@ -106,13 +106,13 @@ public boolean askToSaveBeforeClose(Notepad.Counter c)
 {
 int choice;
 String name="";
-if(this.fileName!=null) name=this.fileName;
+if(this.filePath!=null) name=this.filePath;
 else name="Untitled";
 
 choice=JOptionPane.showConfirmDialog(fakeParent,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
-if(this.fileName!=null) saveFile(c);
+if(this.filePath!=null) saveFile(c);
 else saveAs(c);
 notepad.closeFrame();
 }
@@ -138,13 +138,13 @@ public boolean askToSaveBeforeOpenNewFile(Notepad.Counter c)
 {
 int choice;
 String name="";
-if(this.fileName!=null) name=fileName;
+if(this.filePath!=null) name=filePath;
 else name="Untitled";
 
 choice=JOptionPane.showConfirmDialog(fakeParent,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
-if(this.fileName!=null)saveFile(c);
+if(this.filePath!=null)saveFile(c);
 else saveAs(c);
 //closeFrame();
 }
@@ -173,13 +173,13 @@ if(isTextChanged)
 {
 int choice;
 String name="";
-if(this.fileName!=null) name=displayFileName;
+if(this.filePath!=null) name=displayFileName;
 else name="Untitled";
 
 choice=JOptionPane.showConfirmDialog(fakeParent,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
-if(this.fileName!=null)success=saveFile(c);
+if(this.filePath!=null)success=saveFile(c);
 else success=saveAs(c);
 if(success==false) return success;
 this.textArea.setText("");
@@ -198,10 +198,10 @@ else
 {
 this.textArea.setText("");
 }
-this.fileName=null;
+this.filePath=null;
 this.extension=null;
 this.displayFileName=null;
-notepad.setFileName(this.fileName);
+notepad.setFileName(this.filePath);
 notepad.setTitle("Untitled - Danipad");
 return success;
 }
@@ -215,6 +215,7 @@ if(result==JFileChooser.APPROVE_OPTION)
 File selectedFile=fileChooser.getSelectedFile();
 if(selectedFile.isDirectory()) return false;
 textArea.setText("");
+this.filePath=selectedFile.getAbsolutePath();
 this.fileName=selectedFile.getName();
 this.file=selectedFile;
 System.out.println("Selected file name "+this.fileName);
@@ -262,11 +263,12 @@ if(choice==JOptionPane.YES_OPTION)
 RandomAccessFile randomAccessFile=new RandomAccessFile(selectedFile,"rw");
 randomAccessFile.writeBytes(textArea.getText());
 this.file=selectedFile;
+this.filePath=selectedFile.getAbsolutePath();
 this.fileName=selectedFile.getName();
 setExtension();
 setDisplayFileName();
 randomAccessFile.close();
-notepad.setFileName(this.fileName);
+notepad.setFileName(this.filePath);
 notepad.setTitle(this.displayFileName+" - Danipad");
 saved=true;
 }
@@ -280,12 +282,13 @@ else
 checkFileNameValidity(selectedFile.getName());
 this.file=selectedFile;
 this.fileName=selectedFile.getName();
+this.filePath=selectedFile.getAbsolutePath();
 setExtension();
 setDisplayFileName();
 RandomAccessFile randomAccessFile=new RandomAccessFile(this.file,"rw");
 randomAccessFile.writeBytes(textArea.getText());
 randomAccessFile.close();
-notepad.setFileName(this.fileName);
+notepad.setFileName(this.filePath);
 notepad.setTitle(this.displayFileName+" - Danipad");
 saved=true;
 
@@ -308,7 +311,7 @@ public void openFile(Notepad.Counter c)
 {
 try
 {
-if(this.fileName==null)
+if(this.filePath==null)
 {
 notepad.setTitle("Untitled"+" - Danipad");
 }
@@ -316,11 +319,11 @@ else
 {
 setExtension();
 setDisplayFileName();
-this.file=new File(fileName);
+this.file=new File(filePath);
 
 if(!this.file.exists())
 {
-int option=JOptionPane.showConfirmDialog(fakeParent,"Cannot find the "+fileName+" file.\n\nDo you want to create a new file?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
+int option=JOptionPane.showConfirmDialog(fakeParent,"Cannot find the "+filePath+" file.\n\nDo you want to create a new file?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
 if(option==JOptionPane.YES_OPTION)
 {
 this.file.createNewFile();
@@ -329,7 +332,7 @@ textArea.setText("");
 }
 else if(option==JOptionPane.NO_OPTION)
 {
-this.fileName="Untitled";
+this.filePath="Untitled";
 }
 else if(option==JOptionPane.CANCEL_OPTION)
 {
@@ -393,7 +396,7 @@ worker.execute();
 }
 notepad.setTitle(this.displayFileName+"- Danipad");
 }
-notepad.setFileName(this.fileName);
+notepad.setFileName(this.filePath);
 }catch(IOException exception)
 {
 JOptionPane.showMessageDialog(fakeParent, "Failed to open file. Please check if the file exists and try again.", "File Error", JOptionPane.ERROR_MESSAGE);
