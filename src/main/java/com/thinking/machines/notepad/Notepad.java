@@ -18,12 +18,10 @@ public class Notepad extends JFrame
 public class Counter
 {
 public boolean suppressChangeEvents=false;
-public int i=0;
-public String originalText="";
 }
 private ImageIcon logoIcon;
 private FontChooser fontChooser;
-String originalText;
+
 private int fontSize;
 private final int maxFontSize=60;
 private final int minFontSize=8;
@@ -213,7 +211,6 @@ setJMenuBar(menuBar);
 private void initComponents()
 {
 counter=new Counter();
-counter.i=0;
 textArea=new JTextArea();
 fontChooser=new FontChooser(this);
 scrollPane=new JScrollPane(textArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -909,7 +906,6 @@ saveMenuItem.addActionListener(ev->{
 boolean success=true;
 if(fileHandler.getDisplayFileName()!=null)
 {
-String s=counter.originalText;
 success=fileHandler.saveFile(counter);
 }
 else
@@ -1092,43 +1088,6 @@ else
 {
 setTitle("*Untitled - DaniPad");
 }
-/*
-try
-{
-System.out.println("Ehllo");
-if(fileHandler.getDisplayFileName()!=null )
-{
-if(counter.originalText.equals(textArea.getText())==false) 
-{
-isTextChanged=true;
-setTitle("*"+fileHandler.getDisplayFileName()+" - DaniPad");
-}
-else 
-{
-
-setTitle(fileHandler.getDisplayFileName()+" - DaniPad");
-isTextChanged=false;
-}
-}
-else 
-{
-if(counter.originalText.equals(textArea.getText())==false) 
-{
-setTitle("*Untitled - DaniPad");
-isTextChanged=true;
-}
-else
-{
-setTitle("Untitled - DaniPad");
-isTextChanged=false;
-}
-}
-}catch(Exception exception)
-{
-JOptionPane.showMessageDialog(null, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-LogException.log(exception);
-}
-*/
 }
 
 
