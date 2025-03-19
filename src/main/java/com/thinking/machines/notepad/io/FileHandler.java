@@ -236,7 +236,7 @@ try
 RandomAccessFile randomAccessFile=new RandomAccessFile(this.file,"rw");
 randomAccessFile.setLength(0);
 randomAccessFile.writeBytes(textArea.getText());
-c.originalText=textArea.getText();
+
 randomAccessFile.close();
 }catch(IOException io)
 {
@@ -305,7 +305,7 @@ JOptionPane.showMessageDialog(fakeParent,"Failed to save the file. Please check 
 LogException.log(ioException);
 }
 
-if(saved==true) c.originalText=textArea.getText();
+
 return saved;
 }
 
@@ -314,8 +314,6 @@ public void openFile(Notepad.Counter c)
 {
 try
 {
-c.i=0;
-c.originalText="";
 if(this.fileName==null)
 {
 notepad.setTitle("Untitled"+" - Danipad");
@@ -357,8 +355,6 @@ int count=0;
 List<String> batch=new ArrayList<>();
 while((line=bufferedReader.readLine())!=null)
 {
-c.i++;
-c.originalText=c.originalText+line+"\n";
 batch.add(line);
 if(count%100==0)
 {
