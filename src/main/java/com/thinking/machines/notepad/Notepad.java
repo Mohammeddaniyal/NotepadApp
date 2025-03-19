@@ -3,7 +3,7 @@ import com.thinking.machines.notepad.exceptions.*;
 import com.thinking.machines.notepad.ui.*;
 import com.thinking.machines.notepad.io.*;
 import com.thinking.machines.notepad.models.*;
-import com.thinking.machines.notepad.manager.*;
+import com.thinking.machines.notepad.managers.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.print.PageFormat;
