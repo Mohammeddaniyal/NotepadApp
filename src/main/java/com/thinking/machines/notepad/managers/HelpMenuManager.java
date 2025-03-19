@@ -1,26 +1,28 @@
 package com.thinking.machines.notepad.managers;
 import com.thinking.machines.notepad.io.*;
+import com.thinking.machines.notepad.*;
 import com.thinking.machines.notepad.models.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 public class HelpMenuManager
 {
-private JTextArea textArea;
+private Notepad notepad;
 private JMenuBar menuBar; 
-private Config config;
-private FileHandler fileHandler;
-public HelpMenuManager(JTextArea textArea,JMenuBar menuBar,Config config,FileHandler fileHandler)
+private JMenu helpMenu;
+
+public HelpMenuManager(Notepad notepad,JMenuBar menuBar)
 {
-this.textArea=textArea;
+this.notepad=notepad;
 this.menuBar=menuBar;
-this.config=config;
-this.fileHandler=fileHandler;
 initComponents();
 addEventListeners();
+menuBar.add(helpMenu);
 }
 private void initComponents()
-{}
+{
+helpMenu=new JMenu("Help");
+}
 private void addEventListeners()
 {}
 }
