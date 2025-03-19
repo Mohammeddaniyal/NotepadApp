@@ -347,6 +347,8 @@ notepad.closeFrame();
 }
 else
 {
+this.encoding=EncodingDetector.detectEncoding(file);
+
 BufferedReader bufferedReader=new BufferedReader(new FileReader(file));
 c.suppressChangeEvents=true;
 SwingWorker<Void,String> worker=new SwingWorker<>(){
