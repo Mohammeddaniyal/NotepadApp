@@ -1003,11 +1003,6 @@ new DocumentListener(){
 public void insertUpdate(DocumentEvent de)
 {
 if(!counter.suppressChangeEvents) updateTitle();
-/*
-if(counter.i==0) firstTime=false;
-if(firstTime==false) updateTitle();
-counter.i--;
-*/
 }
 @Override
 public void removeUpdate(DocumentEvent de)
