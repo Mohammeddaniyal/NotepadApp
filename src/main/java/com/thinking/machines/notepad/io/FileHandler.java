@@ -206,16 +206,9 @@ return success;
 }
 public boolean openFilePrompt()
 {
-fileChooser.setFileView(null);
 fileChooser.setCurrentDirectory(new File("."));
-fileChooser.setFileView(new FileView() {
-    @Override
-    public Icon getIcon(File f) {
-        return UIManager.getIcon("FileView.fileIcon");  // Use default Java icon
-    }
-});
 
-int result=fileChooser.showOpenDialog(null);
+int result=fileChooser.showOpenDialog(fakeParent);
 if(result==JFileChooser.APPROVE_OPTION)
 {
 File selectedFile=fileChooser.getSelectedFile();
