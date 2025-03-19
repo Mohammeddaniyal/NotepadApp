@@ -349,7 +349,7 @@ else
 {
 this.encoding=EncodingDetector.detectEncoding(file);
 
-BufferedReader bufferedReader=new BufferedReader(new FileReader(file));
+BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(new FileInputStream(file),encoding));
 c.suppressChangeEvents=true;
 SwingWorker<Void,String> worker=new SwingWorker<>(){
 @Override
