@@ -228,8 +228,11 @@ return false;
 }
 public boolean saveFile(Notepad.Counter c)
 {
-try
+try(BufferedWriter bufferedWriter)
 {
+
+
+
 RandomAccessFile randomAccessFile=new RandomAccessFile(this.file,"rw");
 randomAccessFile.setLength(0);
 randomAccessFile.writeBytes(textArea.getText());
