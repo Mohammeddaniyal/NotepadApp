@@ -258,14 +258,12 @@ int choice;
 choice=JOptionPane.showConfirmDialog(fileChooser,selectedFile.getName()+" already exists.\nDo you want to replace it?","Confirm Save As",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
-RandomAccessFile randomAccessFile=new RandomAccessFile(selectedFile,"rw");
-randomAccessFile.writeBytes(textArea.getText());
 this.file=selectedFile;
+saveFile(c);
 this.filePath=selectedFile.getAbsolutePath();
 this.fileName=selectedFile.getName();
 setExtension();
 setDisplayFileName();
-randomAccessFile.close();
 notepad.setFileName(this.filePath);
 notepad.setTitle(this.displayFileName+" - Danipad");
 saved=true;
