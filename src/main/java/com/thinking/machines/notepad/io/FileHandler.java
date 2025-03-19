@@ -2,6 +2,7 @@ package com.thinking.machines.notepad.io;
 import com.thinking.machines.notepad.exceptions.*;
 import com.thinking.machines.notepad.*;
 import java.io.*;
+import java.nio.charset.Charset;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.event.*;
@@ -11,6 +12,7 @@ public  class FileHandler
 {
 private JFileChooser fileChooser=new JFileChooser();
 private static final List<String> knownExtensions = Arrays.asList("txt", "java", "c", "cpp", "py", "html", "css");
+private Charset encoding;
 private String extension;
 private String filePath;
 private String fileName;
