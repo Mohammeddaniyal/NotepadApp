@@ -347,7 +347,7 @@ notepad.closeFrame();
 else
 {
 BufferedReader bufferedReader=new BufferedReader(new FileReader(file));
-c.suppressChangeEvents=false;
+c.suppressChangeEvents=true;
 SwingWorker<Void,String> worker=new SwingWorker<>(){
 @Override
 protected Void doInBackground() throws Exception
@@ -390,7 +390,7 @@ protected void done()
 try
 {
 if(bufferedReader!=null) bufferedReader.close();
-c.suppressChangeEvents=true;
+c.suppressChangeEvents=false;
 }catch(IOException ioException)
 {
 LogException.log(ioException);
