@@ -227,6 +227,13 @@ fileHandler=new FileHandler(this,fakeParent,textArea,scrollPane,fileName);
 }
 private void addEventListeners()
 {
+
+pageSetupMenuItem.addActionListener(ev->{
+PrinterJob printerJob=PrinterJob.getPrinterJob();
+PageFormat pageFormat=printerJob.pageDialog(printerJob.defaultPage());
+});
+
+
 textArea.addCaretListener((ev)->{
 String selectedText=textArea.getSelectedText();
 cutMenuItem.setEnabled(selectedText!=null);
