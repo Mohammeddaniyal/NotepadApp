@@ -228,16 +228,17 @@ return false;
 }
 public boolean saveFile(Notepad.Counter c)
 {
-try(BufferedWriter bufferedWriter)
+try(BufferedWriter bufferedWriter=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file),this.encoding)))
 {
 
 
-
+/*
 RandomAccessFile randomAccessFile=new RandomAccessFile(this.file,"rw");
 randomAccessFile.setLength(0);
 randomAccessFile.writeBytes(textArea.getText());
 
 randomAccessFile.close();
+*/
 }catch(IOException io)
 {
 JOptionPane.showMessageDialog(fakeParent,"Failed to save the file. Please check permissions and try again.", "Save Error",JOptionPane.ERROR_MESSAGE);
