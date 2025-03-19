@@ -325,6 +325,7 @@ else
 setExtension();
 setDisplayFileName();
 this.file=new File(fileName);
+
 if(!this.file.exists())
 {
 int option=JOptionPane.showConfirmDialog(fakeParent,"Cannot find the "+fileName+" file.\n\nDo you want to create a new file?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
@@ -346,7 +347,7 @@ notepad.closeFrame();
 else
 {
 BufferedReader bufferedReader=new BufferedReader(new FileReader(file));
-
+c.suppressChangeEvents=false;
 SwingWorker<Void,String> worker=new SwingWorker<>(){
 @Override
 protected Void doInBackground() throws Exception
@@ -389,6 +390,7 @@ protected void done()
 try
 {
 if(bufferedReader!=null) bufferedReader.close();
+c.suppressChangeEvents=true;
 }catch(IOException ioException)
 {
 LogException.log(ioException);
