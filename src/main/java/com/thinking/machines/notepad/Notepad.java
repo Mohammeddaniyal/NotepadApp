@@ -17,6 +17,7 @@ public class Notepad extends JFrame
 {
 public class Counter
 {
+public boolean suppressChangeEvents;
 public int i=0;
 public String originalText="";
 }
