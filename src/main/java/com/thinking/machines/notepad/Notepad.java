@@ -6,6 +6,8 @@ import com.thinking.machines.notepad.models.*;
 import com.thinking.machines.notepad.manager.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterJob;
 import java.awt.event.*;
 import java.awt.datatransfer.*;
 import javax.swing.undo.*;
@@ -227,6 +229,17 @@ fileHandler=new FileHandler(this,fakeParent,textArea,scrollPane,fileName);
 }
 private void addEventListeners()
 {
+
+printMenuItem.addActionListener(ev->{
+PrinterJob printerJob=PrinterJob.getPrinterJob();
+printerJob.setPrintable((graphics,pageFormat,pageIndex)->{
+
+if(pageIndex>0) return Printable.NO_SUCH_PAGE; //only one page for printing now
+
+Graphics2d g2d=(Graphics2D)graphics;
+
+});
+});
 
 pageSetupMenuItem.addActionListener(ev->{
 PrinterJob printerJob=PrinterJob.getPrinterJob();
