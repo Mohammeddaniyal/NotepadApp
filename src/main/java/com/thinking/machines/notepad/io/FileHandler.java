@@ -338,6 +338,10 @@ else if(option==JOptionPane.CANCEL_OPTION)
 {
 notepad.closeFrame();
 }
+else
+{
+notepad.closeFrame();
+}
 }
 else
 {
