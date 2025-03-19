@@ -289,6 +289,7 @@ boolean []succ=new boolean[2];
 SwingUtilities.invokeLater(()->{
 succ[0]=fileHandler.openFilePrompt();
 });
+System.out.println(succ[0]);
 if(succ[0]==false) return;
 fileHandler.openFile(counter);
 
