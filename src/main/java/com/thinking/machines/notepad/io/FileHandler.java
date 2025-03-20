@@ -406,5 +406,12 @@ LogException.log(exception);
 }
 
 }
-
+public String getCurrentEncoding()
+{
+return ((this.filePath!=null)?this.encoding.name():"UTF-8");
+}
+public void setSelectedEncoding(String encodingName)
+{
+this.encoding=Charset.forName(encodingName);
+}
 }
