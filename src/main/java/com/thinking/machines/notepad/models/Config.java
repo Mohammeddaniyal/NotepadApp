@@ -7,4 +7,5 @@ public boolean matchCase=true;
 public boolean wrapAround=false;
 public boolean upDirection=false;
 public String lastSearchedText="";
+public String selectedTheme="Light Mode";
 }
