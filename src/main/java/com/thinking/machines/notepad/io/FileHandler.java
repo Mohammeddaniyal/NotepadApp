@@ -1,6 +1,7 @@
 package com.thinking.machines.notepad.io;
 import com.thinking.machines.notepad.exceptions.*;
 import com.thinking.machines.notepad.*;
+import com.thinking.machines.notepad.ui.*;
 import java.io.*;
 import java.nio.charset.Charset;
 import javax.swing.*;
@@ -12,6 +13,7 @@ public  class FileHandler
 {
 private JFileChooser fileChooser=new JFileChooser();
 private static final List<String> knownExtensions = Arrays.asList("txt", "java", "c", "cpp", "py", "html", "css");
+private StatusPanel statusPanel;
 private Charset encoding;
 private String extension;
 private String filePath;
@@ -36,18 +38,22 @@ this.file=new File(this.filePath);
 this.baseFileName=this.file.getName();
 }
 fileChooser.setFileView(new FileView() {
-        @Override
-        public Icon getIcon(File f) {
-            try {
-                // Get the system icon safely (avoiding null)
-                Icon icon = FileSystemView.getFileSystemView().getSystemIcon(f);
-                return (icon != null) ? icon : UIManager.getIcon("FileView.fileIcon"); // Fallback icon
-            } catch (Exception e) {
-                return UIManager.getIcon("FileView.fileIcon"); // Fallback to default icon
-            }
-        }
-    });
+@Override
+public Icon getIcon(File f) {
+try {
+// Get the system icon safely (avoiding null)
+Icon icon = FileSystemView.getFileSystemView().getSystemIcon(f);
+return (icon != null) ? icon : UIManager.getIcon("FileView.fileIcon"); // Fallback icon
+} catch (Exception e) {
+return UIManager.getIcon("FileView.fileIcon"); // Fallback to default icon
+}
+}
+});
 
+}
+public void setStatusPanelProperty(StatusPanel statusPanel)
+{
+this.statusPanel=statusPanel;
 }
 public String getDisplayFileName()
 {
@@ -85,8 +91,6 @@ else
 {
 this.displayFileName=this.baseFileName;
 }
-
-
 }
 public boolean checkFileNameValidity(String fileName)
 {
@@ -97,8 +101,8 @@ for(int x=0;x<invalidChars.length();x++)
 {
 if(fileName.indexOf(invalidChars.charAt(x))!=-1)
 {
-System.out.println("Invalid file name contains : "+invalidChars.charAt(x));
-System.out.println(fileName);
+//System.out.println("Invalid file name contains : "+invalidChars.charAt(x));
+//System.out.println(fileName);
 return false;
 }
 }
@@ -220,8 +224,6 @@ textArea.setText("");
 this.filePath=selectedFile.getAbsolutePath();
 this.fileName=selectedFile.getName();
 this.file=selectedFile;
-System.out.println("Selected file name "+this.fileName);
-System.out.println("Absolute path : "+this.file.getAbsolutePath());
 return true;
 }
 return false;
@@ -237,6 +239,7 @@ JOptionPane.showMessageDialog(fakeParent,"Failed to save the file. Please check 
 LogException.log(io);
 return false;
 }
+statusPanel.setSaved();
 return true;
 }
 public boolean saveAs(Notepad.Counter c)
@@ -285,8 +288,6 @@ saveFile(c);
 notepad.setFileName(this.filePath);
 notepad.setTitle(this.displayFileName+" - Danipad");
 saved=true;
-
-
 }
 }
 }catch(Exception exception)
@@ -296,7 +297,7 @@ JOptionPane.showMessageDialog(fakeParent,"Failed to save the file. Please check 
 LogException.log(exception);
 }
 
-
+if(saved) statusPanel.setSaved();
 return saved;
 }
 
@@ -408,7 +409,7 @@ LogException.log(exception);
 }
 public String getCurrentEncoding()
 {
-return ((this.filePath!=null)?this.encoding.name():"UTF-8");
+return ((this.encoding!=null)?this.encoding.name():"UTF-8");
 }
 public void setSelectedEncoding(String encodingName)
 {
