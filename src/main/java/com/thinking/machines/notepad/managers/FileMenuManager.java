@@ -165,7 +165,7 @@ printerJob.print();
 }catch(PrinterException printerException)
 {
 LogException.log(printerException);
-JOptionPane.showMessageDialog(fakeParent,"Printing failed, try again later","Print Error",JOptionPane.ERROR_MESSAGE);
+JOptionPane.showMessageDialog(notepad,"Printing failed, try again later","Print Error",JOptionPane.ERROR_MESSAGE);
 }
 }
 });
