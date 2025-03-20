@@ -621,7 +621,7 @@ int lineNumber=Integer.parseInt(input);
 int totalLines=textArea.getLineCount();
 if(lineNumber<1 || lineNumber>totalLines)
 {
-JOptionPane.showMessageDialog(notepad,"The line number is beyond the total line number","DaniPad - Goto Line",JOptionPane.ERROR_MESSAGE);
+JOptionPane.showMessageDialog(goToDialog,"The line number is beyond the total line number","DaniPad - Goto Line",JOptionPane.ERROR_MESSAGE);
 return;
 }
 //calculate postion and move caret
@@ -631,12 +631,12 @@ goToDialog.dispose();
 }catch(NumberFormatException numberFormatException)
 {
 //show a tooltip or a popup window
-JOptionPane.showMessageDialog(null, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+JOptionPane.showMessageDialog(goToDialog, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
 LogException.log(numberFormatException);
 }
 catch(BadLocationException badLocationException)
 {
-JOptionPane.showMessageDialog(null, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+JOptionPane.showMessageDialog(goToDialog, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
 LogException.log(badLocationException);
 }
 });
@@ -661,7 +661,7 @@ lineField.getDocument().addDocumentListener(new DocumentListener(){
 @Override
 public void insertUpdate(DocumentEvent de)
 {
-char c=lineField.getText().charAt(0);
+char c=lineField.getText().charAt(lineField.getText().length()-1);
 if(!(c>=48 && c<=57))
 {
 searchContext.emptyLineField=true;
