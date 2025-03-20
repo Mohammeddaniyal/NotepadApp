@@ -31,6 +31,7 @@ private static int frameCount=0;
 private boolean firstTime=true;
 private javax.swing.Timer clipBoardChecker;
 private UndoManager undoManager;
+private ThemeManager themeManager;
 private FileHandler fileHandler;
 private String fileName;
 private JMenuBar menuBar;
@@ -45,6 +46,7 @@ private EditMenuManager editMenuManager;
 private FormatMenuManager formatMenuManager;
 private ViewMenuManager viewMenuManager;
 private HelpMenuManager helpMenuManager;
+private SettingMenuManager settingMenuManager;
 
 public void setFileName(String fileName)
 {
@@ -89,6 +91,7 @@ scrollPane=new JScrollPane(textArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAY
 container=getContentPane();
  statusbarPanel=new JPanel(new BorderLayout());
 undoManager=new UndoManager();
+themeManager=new ThemeManager(textArea,config);
 logoIcon=new ImageIcon(this.getClass().getResource("/icons/icon.png"));
 
 fileHandler=new FileHandler(this,fakeParent,textArea,scrollPane,fileName);
@@ -101,6 +104,7 @@ editMenuManager=new EditMenuManager(this,textArea,scrollPane,fakeParent,menuBar,
 formatMenuManager=new FormatMenuManager(this,textArea,fakeParent,menuBar,config,fileHandler,counter);
 viewMenuManager=new ViewMenuManager(this,textArea,fakeParent,menuBar,config,fileHandler,counter);
 helpMenuManager=new HelpMenuManager(this,menuBar);
+
 setJMenuBar(menuBar);
 }
 private void addEventListeners()
@@ -196,7 +200,7 @@ setupLayout();
 counter.isTextChanged=false;
 clipBoardChecker.start();
 fileHandler.openFile(counter);	//opening file and appending in textArea
-
+settingMenuManager=new SettingMenuManager(this,menuBar,fileHandler,themeManager,counter,fakeParent);
 //set default close operation as do nothing
 
 setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
