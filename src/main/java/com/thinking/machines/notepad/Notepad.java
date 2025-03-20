@@ -38,7 +38,7 @@ private JMenuBar menuBar;
 private JTextArea textArea;
 private JScrollPane scrollPane;
 private Container container;
-private JPanel statusbarPanel;
+private StatusPanel statusPanel;
 private JLabel statusLabel;
 
 private FileMenuManager fileMenuManager;
@@ -89,12 +89,14 @@ counter=new Counter();
 textArea=new JTextArea();
 scrollPane=new JScrollPane(textArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 container=getContentPane();
- statusbarPanel=new JPanel(new BorderLayout());
 undoManager=new UndoManager();
 themeManager=new ThemeManager(textArea,config);
 logoIcon=new ImageIcon(this.getClass().getResource("/icons/icon.png"));
 
 fileHandler=new FileHandler(this,fakeParent,textArea,scrollPane,fileName);
+statusPanel=new StatusPanel(textArea,config);
+
+
 fakeParent=new JFrame();
 fakeParent.setIconImage(logoIcon.getImage());
 
@@ -103,7 +105,8 @@ fileMenuManager=new FileMenuManager(this,textArea,fakeParent,menuBar,config,file
 editMenuManager=new EditMenuManager(this,textArea,scrollPane,fakeParent,menuBar,config,fileHandler,counter,undoManager);
 formatMenuManager=new FormatMenuManager(this,textArea,fakeParent,menuBar,config,fileHandler,counter);
 viewMenuManager=new ViewMenuManager(this,textArea,fakeParent,menuBar,config,fileHandler,counter);
-helpMenuManager=new HelpMenuManager(this,menuBar);
+helpMenuManager=new HelpMenuManager(this,menuBar,fakeParent);
+settingMenuManager=new SettingMenuManager(this,statusPanel,menuBar,fileHandler,themeManager,counter,fakeParent);
 
 setJMenuBar(menuBar);
 }
@@ -126,12 +129,15 @@ int caretPosition=textArea.getCaretPosition();
 int lineNumber=textArea.getLineOfOffset(caretPosition)+1;//0 based
 //caretPosition-actualPosition gives the column no. because it's continues offset no reset of number from new line it continues, suppose at line one there are 10 char then from line it start counting from 11
 int columnNumber=caretPosition-textArea.getLineStartOffset(lineNumber-1)+1;//-1 because 0 based
-statusLabel.setText("Line: "+lineNumber+", Column: "+columnNumber);
+statusPanel.setCursorPosition(lineNumber,columnNumber);
 }catch(BadLocationException badLocationException)
 {
 JOptionPane.showMessageDialog(null, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
 LogException.log(badLocationException);
 }
+
+
+
 });
 
 clipBoardChecker=new javax.swing.Timer(500,(ev)->{
@@ -165,13 +171,9 @@ int y=(d.height/2)-(height/2);
 setSize(width,height);
 setLocation(x,y);
 setVisible(true);
-statusbarPanel.setVisible(false);
-statusLabel=new JLabel("Line: 1, Column: 1");
-statusLabel.setFont(new Font("Segoe UI",Font.PLAIN,13));
-statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
-statusbarPanel.add(statusLabel,BorderLayout.WEST);
 container.add(scrollPane,BorderLayout.CENTER);	
-container.add(statusbarPanel,BorderLayout.SOUTH);
+container.add(statusPanel,BorderLayout.SOUTH);
+
 }
 private void initUIState()
 {
@@ -199,8 +201,12 @@ initUIState();
 setupLayout();
 counter.isTextChanged=false;
 clipBoardChecker.start();
+
 fileHandler.openFile(counter);	//opening file and appending in textArea
-settingMenuManager=new SettingMenuManager(this,menuBar,fileHandler,themeManager,counter,fakeParent);
+statusPanel.updateEncoding(fileHandler.getCurrentEncoding());
+//statusPanel.setVisible(false);
+fileHandler.setStatusPanelProperty(statusPanel);
+
 //set default close operation as do nothing
 
 setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -211,17 +217,29 @@ new DocumentListener(){
 @Override
 public void insertUpdate(DocumentEvent de)
 {
-if(!counter.suppressChangeEvents) updateTitle();
+if(!counter.suppressChangeEvents)
+{
+statusPanel.setUnsaved();
+updateTitle();
+}
 }
 @Override
 public void removeUpdate(DocumentEvent de)
 {
-if(!counter.suppressChangeEvents) updateTitle();
+if(!counter.suppressChangeEvents) 
+{
+statusPanel.setUnsaved();
+updateTitle();
+}
 }
 @Override
 public void changedUpdate(DocumentEvent de)
 {
-if(!counter.suppressChangeEvents) updateTitle();
+if(!counter.suppressChangeEvents) 
+{
+statusPanel.setUnsaved();
+updateTitle();
+}
 }
 });
 
@@ -262,7 +280,7 @@ return false;
 }
 public void setStatusBarPanelVisibility(boolean visible)
 {
-statusbarPanel.setVisible(visible);
+statusPanel.setVisible(visible);
 }
 public void openNewWindow()
 {
@@ -285,7 +303,6 @@ dispose();
 }
 private void updateTitle()
 {
-System.out.println("Bye");
 counter.isTextChanged=true;
 if(fileHandler.getDisplayFileName()!=null )
 {
