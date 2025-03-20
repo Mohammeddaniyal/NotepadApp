@@ -115,7 +115,7 @@ String name="";
 if(this.filePath!=null) name=this.filePath;
 else name="Untitled";
 
-choice=JOptionPane.showConfirmDialog(fakeParent,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+choice=JOptionPane.showConfirmDialog(notepad,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
 if(this.filePath!=null) saveFile(c);
@@ -147,7 +147,7 @@ String name="";
 if(this.filePath!=null) name=filePath;
 else name="Untitled";
 
-choice=JOptionPane.showConfirmDialog(fakeParent,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+choice=JOptionPane.showConfirmDialog(notepad,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
 if(this.filePath!=null)saveFile(c);
@@ -182,7 +182,7 @@ String name="";
 if(this.filePath!=null) name=displayFileName;
 else name="Untitled";
 
-choice=JOptionPane.showConfirmDialog(fakeParent,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+choice=JOptionPane.showConfirmDialog(notepad,"Do you want to save changes to "+name+" ?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 if(choice==JOptionPane.YES_OPTION)
 {
 if(this.filePath!=null)success=saveFile(c);
@@ -215,7 +215,7 @@ public boolean openFilePrompt()
 {
 fileChooser.setCurrentDirectory(new File("."));
 
-int result=fileChooser.showOpenDialog(fakeParent);
+int result=fileChooser.showOpenDialog(notepad);
 if(result==JFileChooser.APPROVE_OPTION)
 {
 File selectedFile=fileChooser.getSelectedFile();
@@ -235,7 +235,7 @@ try(BufferedWriter bufferedWriter=new BufferedWriter(new OutputStreamWriter(new 
 bufferedWriter.write(textArea.getText());
 }catch(IOException io)
 {
-JOptionPane.showMessageDialog(fakeParent,"Failed to save the file. Please check permissions and try again.", "Save Error",JOptionPane.ERROR_MESSAGE);
+JOptionPane.showMessageDialog(notepad,"Failed to save the file. Please check permissions and try again.", "Save Error",JOptionPane.ERROR_MESSAGE);
 LogException.log(io);
 return false;
 }
@@ -249,7 +249,7 @@ try
 {
 
 fileChooser.setCurrentDirectory(new File("."));
- int result=fileChooser.showSaveDialog(fakeParent);
+ int result=fileChooser.showSaveDialog(notepad);
 if(result==JFileChooser.APPROVE_OPTION)
 {
 File selectedFile=fileChooser.getSelectedFile();
@@ -293,7 +293,7 @@ saved=true;
 }catch(Exception exception)
 {
 saved=false;
-JOptionPane.showMessageDialog(fakeParent,"Failed to save the file. Please check permissions and try again.", "Save Error",JOptionPane.ERROR_MESSAGE);
+JOptionPane.showMessageDialog(notepad,"Failed to save the file. Please check permissions and try again.", "Save Error",JOptionPane.ERROR_MESSAGE);
 LogException.log(exception);
 }
 
@@ -318,7 +318,7 @@ this.file=new File(filePath);
 
 if(!this.file.exists())
 {
-int option=JOptionPane.showConfirmDialog(fakeParent,"Cannot find the "+filePath+" file.\n\nDo you want to create a new file?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
+int option=JOptionPane.showConfirmDialog(notepad,"Cannot find the "+filePath+" file.\n\nDo you want to create a new file?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
 if(option==JOptionPane.YES_OPTION)
 {
 this.file.createNewFile();
@@ -400,7 +400,7 @@ notepad.setTitle(this.displayFileName+"- Danipad");
 notepad.setFileName(this.filePath);
 }catch(IOException exception)
 {
-JOptionPane.showMessageDialog(fakeParent, "Failed to open file. Please check if the file exists and try again.", "File Error", JOptionPane.ERROR_MESSAGE);
+JOptionPane.showMessageDialog(notepad, "Failed to open file. Please check if the file exists and try again.", "File Error", JOptionPane.ERROR_MESSAGE);
 notepad.setTitle("Untitled"+" - Danipad");
 notepad.setFileName(null);
 LogException.log(exception);
