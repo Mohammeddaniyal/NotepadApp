@@ -1,4 +1,4 @@
- package com.thinking.machines.notepad.managers;
+package com.thinking.machines.notepad.managers;
 import com.thinking.machines.notepad.Notepad;
 import com.thinking.machines.notepad.io.*;
 import com.thinking.machines.notepad.models.*;
@@ -22,7 +22,7 @@ private Notepad.Counter counter;
 private UndoManager undoManager;
 private SearchManager searchManager;
 private JMenu editMenu;
-private JMenuItem undoMenuItem;
+private JMenuItem undoMenuItem,redoMenuItem;
 private JMenuItem cutMenuItem,copyMenuItem,pasteMenuItem;
 private JMenuItem deleteMenuItem,findMenuItem,findNextMenuItem,findPreviousMenuItem;
 private JMenuItem replaceMenuItem,goToMenuItem,selectAllMenuItem;
@@ -50,6 +50,7 @@ menuBar.add(editMenu);
 private void initComponents()
 {
 undoMenuItem=new JMenuItem("Undo");
+redoMenuItem=new JMenuItem("Redo");
 cutMenuItem=new JMenuItem("Cut");
 copyMenuItem=new JMenuItem("Copy");
 pasteMenuItem=new JMenuItem("Paste");
@@ -66,6 +67,7 @@ editMenu=new JMenu("Edit");
 private void addMenuItems()
 {
 editMenu.add(undoMenuItem);
+editMenu.add(redoMenuItem);
 editMenu.add(cutMenuItem);
 editMenu.add(copyMenuItem);
 editMenu.add(pasteMenuItem);
@@ -88,6 +90,7 @@ pasteMenuItem.setEnabled(false);
 private void bindShortcutKeys()
 {
 undoMenuItem.setAccelerator(KeyStroke.getKeyStroke('Z',Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+redoMenuItem.setAccelerator(KeyStroke.getKeyStroke('Y',Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
 cutMenuItem.setAccelerator(KeyStroke.getKeyStroke('X',Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
 copyMenuItem.setAccelerator(KeyStroke.getKeyStroke('C',Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
 pasteMenuItem.setAccelerator(KeyStroke.getKeyStroke('V',Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
@@ -105,8 +108,24 @@ private void addEventListeners()
 undoMenuItem.addActionListener(ev->{
 if(undoManager.canUndo())
 {
+int oldPos=textArea.getCaretPosition();
 undoManager.undo();
+int newPos=textArea.getCaretPosition();
+textArea.select(Math.min(oldPos,newPos),Math.max(oldPos,newPos));
+redoMenuItem.setEnabled(true);
 undoMenuItem.setEnabled(undoManager.canUndo());
+}
+});
+
+redoMenuItem.addActionListener(ev->{
+if(undoManager.canRedo())
+{
+int oldPos=textArea.getCaretPosition();
+undoManager.redo();
+int newPos=textArea.getCaretPosition();
+textArea.select(Math.min(oldPos,newPos),Math.max(oldPos,newPos));
+undoMenuItem.setEnabled(undoManager.canUndo());
+redoMenuItem.setEnabled(undoManager.canRedo());
 }
 });
 
@@ -687,7 +706,10 @@ public void setEnabledUndoMenuItem(boolean enable)
 {
 undoMenuItem.setEnabled(enable);
 }
-
+public void setEnabledRedoMenuItem(boolean enable)
+{
+redoMenuItem.setEnabled(enable);
+}
 public void setEnabledCutMenuItem(boolean enable)
 {
 cutMenuItem.setEnabled(enable);

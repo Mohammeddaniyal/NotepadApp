@@ -79,6 +79,7 @@ this.extension="txt";
 this.filePath=this.filePath+"."+this.extension;
 this.baseFileName=this.file.getName()+"."+this.extension;
 }
+
 }
 public void setDisplayFileName()
 {
@@ -262,11 +263,13 @@ choice=JOptionPane.showConfirmDialog(fileChooser,selectedFile.getName()+" alread
 if(choice==JOptionPane.YES_OPTION)
 {
 this.file=selectedFile;
-saveFile(c);
 this.filePath=selectedFile.getAbsolutePath();
 this.fileName=selectedFile.getName();
+this.encoding=Charset.forName("UTF-8");
+this.encoding=EncodingDetector.detectEncoding(file);
 setExtension();
 setDisplayFileName();
+saveFile(c);
 notepad.setFileName(this.filePath);
 notepad.setTitle(this.displayFileName+" - Danipad");
 saved=true;
@@ -284,6 +287,10 @@ this.fileName=selectedFile.getName();
 this.filePath=selectedFile.getAbsolutePath();
 setExtension();
 setDisplayFileName();
+this.file=new File(this.filePath);
+this.file.createNewFile();
+this.encoding=Charset.forName("UTF-8");
+this.encoding=EncodingDetector.detectEncoding(file);
 saveFile(c);
 notepad.setFileName(this.filePath);
 notepad.setTitle(this.displayFileName+" - Danipad");
@@ -294,6 +301,7 @@ saved=true;
 {
 saved=false;
 JOptionPane.showMessageDialog(notepad,"Failed to save the file. Please check permissions and try again.", "Save Error",JOptionPane.ERROR_MESSAGE);
+System.out.println(exception);
 LogException.log(exception);
 }
 
@@ -312,22 +320,38 @@ notepad.setTitle("Untitled"+" - Danipad");
 }
 else
 {
+this.file=new File(filePath);
+boolean success=setupFileLocation();
 setExtension();
 setDisplayFileName();
 this.file=new File(filePath);
 
-if(!this.file.exists())
+
+if(!success)
 {
+this.filePath="Untitled";
+this.displayFileName=null;
+this.extension=null;
+this.encoding=Charset.forName("UTF-8");
+}
+
+else if(!this.file.exists())
+{
+
 int option=JOptionPane.showConfirmDialog(notepad,"Cannot find the "+filePath+" file.\n\nDo you want to create a new file?","Danipad",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
 if(option==JOptionPane.YES_OPTION)
 {
 this.file.createNewFile();
 textArea.setText("");
+this.encoding=EncodingDetector.detectEncoding(file);
 //new file created
 }
 else if(option==JOptionPane.NO_OPTION)
 {
 this.filePath="Untitled";
+this.displayFileName=null;
+this.extension=null;
+this.encoding=Charset.forName("UTF-8");
 }
 else if(option==JOptionPane.CANCEL_OPTION)
 {
@@ -385,6 +409,8 @@ try
 {
 if(bufferedReader!=null) bufferedReader.close();
 c.suppressChangeEvents=false;
+//to ensure the newly loaded content isn't treated as an "Undoable" change
+notepad.discardUndoManagerAllEdits();
 }catch(IOException ioException)
 {
 LogException.log(ioException);
@@ -395,7 +421,9 @@ LogException.log(ioException);
 worker.execute();
 
 }
-notepad.setTitle(this.displayFileName+"- Danipad");
+if(this.displayFileName!=null)notepad.setTitle(this.displayFileName+"- Danipad");
+else notepad.setTitle("Untitled - Danipad");
+
 }
 notepad.setFileName(this.filePath);
 }catch(IOException exception)
@@ -406,6 +434,41 @@ notepad.setFileName(null);
 LogException.log(exception);
 }
 
+}
+private boolean setupFileLocation()
+{
+File parentDir=this.file.getParentFile();
+if(parentDir==null) return true;
+if(this.file.exists())
+{
+if(this.file.isDirectory())
+{
+JOptionPane.showMessageDialog(notepad,"The given path refers to a directory not a file. Cannot create file","Error",JOptionPane.ERROR_MESSAGE);
+return false;
+}
+}
+else
+{
+if(parentDir!=null && parentDir.exists())
+{
+//file dont exists create file
+}
+else
+{
+//parent dir not exists create the missing directories
+if(parentDir!=null && parentDir.mkdir())
+{
+return true;
+}
+else 
+{
+//failed
+JOptionPane.showMessageDialog(notepad,"The System cannot find the specified path","Warning",JOptionPane.WARNING_MESSAGE);
+return false;
+}
+}
+}
+return true;
 }
 public String getCurrentEncoding()
 {

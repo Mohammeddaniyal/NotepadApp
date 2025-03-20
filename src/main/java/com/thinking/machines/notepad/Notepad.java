@@ -148,6 +148,8 @@ editMenuManager.setEnabledPasteMenuItem(isClipboardAvailable());
 textArea.getDocument().addUndoableEditListener(ev->{
 undoManager.addEdit(ev.getEdit());
 editMenuManager.setEnabledUndoMenuItem(undoManager.canUndo());
+//  Reset Redo (New edits clear the redo stack)
+editMenuManager.setEnabledRedoMenuItem(false);
 }
 );
 
@@ -277,6 +279,11 @@ return  clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor);
 {
 return false;
 }
+}
+public void discardUndoManagerAllEdits()
+{
+undoManager.discardAllEdits();
+editMenuManager.setEnabledUndoMenuItem(undoManager.canUndo());
 }
 public void setStatusBarPanelVisibility(boolean visible)
 {

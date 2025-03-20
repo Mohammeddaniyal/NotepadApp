@@ -2,7 +2,7 @@ import java.util.*;
 import java.text.*;
 class psp
 {
-public static void main(String gg[])
+public static void wewemain(String gg[])
 {
 String date="01/"+gg[0]+"/"+gg[1];
 SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy");
