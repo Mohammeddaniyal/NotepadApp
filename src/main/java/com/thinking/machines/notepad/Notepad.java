@@ -102,9 +102,10 @@ fakeParent.setIconImage(logoIcon.getImage());
 
 menuBar=new JMenuBar();
 fileMenuManager=new FileMenuManager(this,textArea,fakeParent,menuBar,config,fileHandler,counter);
+
 editMenuManager=new EditMenuManager(this,textArea,scrollPane,fakeParent,menuBar,config,fileHandler,counter,undoManager);
 formatMenuManager=new FormatMenuManager(this,textArea,fakeParent,menuBar,config,fileHandler,counter);
-viewMenuManager=new ViewMenuManager(this,textArea,fakeParent,menuBar,config,fileHandler,counter);
+viewMenuManager=new ViewMenuManager(this,textArea,statusPanel,fakeParent,menuBar,config,fileHandler,counter);
 helpMenuManager=new HelpMenuManager(this,menuBar,fakeParent);
 settingMenuManager=new SettingMenuManager(this,statusPanel,menuBar,fileHandler,themeManager,counter,fakeParent);
 
@@ -163,7 +164,7 @@ setIconImage(logoIcon.getImage());
 container.setLayout(new BorderLayout());
 Font selectedFont=formatMenuManager.getSelectedFont();
 textArea.setFont(selectedFont);
-
+updateFontSize();
 Dimension d=Toolkit.getDefaultToolkit().getScreenSize();
 int width=800;
 int height=600;
@@ -253,6 +254,12 @@ boolean close=true;
 if(counter.isTextChanged)close=fileHandler.askToSaveBeforeClose(counter);
 if(close)
 {
+/*
+System.out.println("match "+config.matchCase);
+System.out.println("wrap "+config.wrapAround);
+System.out.println("kast "+config.lastSearchedText);
+System.out.println("up "+config.upDirection);
+*/
 ConfigManager.setConfig(config);
 ConfigManager.saveConfig();
 closeFrame();
@@ -279,6 +286,10 @@ return  clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor);
 {
 return false;
 }
+}
+public void updateFontSize()
+{
+viewMenuManager.updateFontSize(textArea.getFont().getSize());
 }
 public void discardUndoManagerAllEdits()
 {
