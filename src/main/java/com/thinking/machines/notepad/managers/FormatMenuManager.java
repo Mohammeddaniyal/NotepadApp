@@ -66,6 +66,7 @@ fontChooser.setVisible(true);
 Font chosenFont=fontChooser.getSelectedFont();
 if(chosenFont!=null) {
 textArea.setFont(chosenFont);
+notepad.updateFontSize();
 }
 });
 
