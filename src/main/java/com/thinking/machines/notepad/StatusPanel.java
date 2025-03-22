@@ -8,6 +8,7 @@ public class StatusPanel extends JPanel
 private JTextArea textArea;
 private JLabel encodingLabel;
 private JLabel cursorLabel;
+private JLabel zoomPercentLabel;
 private JLabel saveStatusLabel;
 private JLabel themeLabel;
 private JLabel autoSaveLabel;
@@ -18,6 +19,7 @@ setBorder(BorderFactory.createEtchedBorder());
 
 encodingLabel = new JLabel("Encoding: UTF-8");
 cursorLabel = new JLabel("Line 1, Column 1");
+zoomPercentLabel = new JLabel("Zoom 100%");
 saveStatusLabel = new JLabel("Status: Saved");
 themeLabel = new JLabel("Theme: "+config.selectedTheme);
 autoSaveLabel = new JLabel("Auto-Save: "+config.autoSaveStatus);
@@ -28,6 +30,8 @@ add(new JSeparator(SwingConstants.VERTICAL)); // Separator
 add(encodingLabel);
 add(new JSeparator(SwingConstants.VERTICAL)); // Separator
 add(cursorLabel);
+add(new JSeparator(SwingConstants.VERTICAL)); // Separator
+add(zoomPercentLabel);
 add(new JSeparator(SwingConstants.VERTICAL));
 add(saveStatusLabel);
 add(new JSeparator(SwingConstants.VERTICAL));
@@ -39,6 +43,10 @@ add(autoSaveLabel);
 public void setCursorPosition(int line,int column)
 {
 cursorLabel.setText("Line "+line+", Column "+column);
+}
+public void updateZoomPercent(int zoomPercent)
+{
+zoomPercentLabel.setText("Zoom "+zoomPercent+"%");
 }
 public void setUnsaved()
 {
