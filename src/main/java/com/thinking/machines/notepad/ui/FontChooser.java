@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import com.thinking.machines.notepad.Notepad;
 public class FontChooser extends JDialog
 {
 private final String FONT_DATA="font.dat";
@@ -14,9 +15,11 @@ private Font selectedFont;
 private String fontName;
 private int fontStyle;
 private int fontSize;
-public FontChooser(JFrame parent)
+private Notepad notepad;
+public FontChooser(Notepad notepad)
 {
-super(parent,"Font Chooser",true);
+super(notepad,"Font Chooser",true);
+this.notepad=notepad;
 setFont();
 setLayout(new BorderLayout());
 fontFamilyBox=new JComboBox<>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
@@ -61,7 +64,7 @@ cancelButton.addActionListener(ev->{
 dispose();
 });
 setSize(400,300);
-setLocationRelativeTo(parent);
+setLocationRelativeTo(notepad);
 updatePreview();
 }
 private void updatePreview()
@@ -84,7 +87,7 @@ public void setFont()
 try
 {
 String userHome = System.getProperty("user.home");
-File fontDirectory = new File(userHome +File.separator+ "notepadAppData"+File.separator+"fonts");
+File fontDirectory = new File(userHome +File.separator+ "DaniPadConfig"+File.separator+"fonts");
 if (!fontDirectory.exists()) 
 {
 fontDirectory.mkdirs();
@@ -116,7 +119,7 @@ private void saveFontInFile()
 try
 {
 String userHome = System.getProperty("user.home");
-File fontDirectory = new File(userHome +File.separator+ "notepadAppData"+File.separator+"fonts");
+File fontDirectory = new File(userHome +File.separator+ "DaniPadConfig"+File.separator+"fonts");
 if (!fontDirectory.exists()) 
 {
 fontDirectory.mkdirs();
