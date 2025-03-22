@@ -121,12 +121,14 @@ if(choice==JOptionPane.YES_OPTION)
 {
 if(this.filePath!=null) saveFile(c);
 else saveAs(c);
-notepad.closeFrame();
+//notepad.closeFrame();
+return true;
 }
 else if(choice==JOptionPane.NO_OPTION)
 {
 //do nothing
-notepad.closeFrame();
+//notepad.closeFrame();
+return true;
 }
 else if(choice==JOptionPane.CANCEL_OPTION)
 {
