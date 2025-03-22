@@ -26,7 +26,7 @@ menuBar.add(helpMenu);
 private void initComponents()
 {
 helpMenu=new JMenu("Help");
-aboutMenuItem = new JMenuItem("About Notepad");
+aboutMenuItem = new JMenuItem("About DaniPad");
 shortcutMenuItem=new JMenuItem("Keyboard Shortcuts");
 websiteMenuItem=new JMenuItem("Visit Website");
 updateMenuItem=new JMenuItem("Check for Updates");        
@@ -49,7 +49,7 @@ updateMenuItem.addActionListener(e -> JOptionPane.showMessageDialog(notepad, "Yo
 private void showAboutDialog() 
 {
 JOptionPane.showMessageDialog(notepad,
-"<html><b>DaniPad</b><br>Version 1.0<br>Developed by Mohammed Daniyal Ali</html>",
+"<html><b>DaniPad</b><br>Version 2.0<br>Developed by Mohammed Daniyal Ali</html>",
 "About DaniPad",
 JOptionPane.INFORMATION_MESSAGE);
 }
@@ -65,9 +65,8 @@ JOptionPane.showMessageDialog(notepad,
 + "Ctrl + Shift + S → Save As<br>"
 + "Ctrl + Z → Undo<br>"
 + "Ctrl + Y → Redo<br>"
-+ "Ctrl + F → Find Text<br>"
-+ "Ctrl + R → Replace Text<br>"
-+ "Ctrl + Q → Quit</html>",
++ "Ctrl + F → Find Dialog<br>"
++ "Ctrl + H → Find & Replace Dialog<br>",
 "Keyboard Shortcuts",
 JOptionPane.INFORMATION_MESSAGE);
 }
