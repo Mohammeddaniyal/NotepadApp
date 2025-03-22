@@ -1,5 +1,5 @@
  package com.thinking.machines.notepad.managers;
-import com.thinking.machines.notepad.Notepad;
+import com.thinking.machines.notepad.*;
 import com.thinking.machines.notepad.io.*;
 import com.thinking.machines.notepad.models.*;
 import java.awt.*;
@@ -9,6 +9,7 @@ public class ViewMenuManager
 {
 private JTextArea textArea;
 private Notepad notepad;
+private StatusPanel statusPanel;
 private JFrame fakeParent;
 private JMenuBar menuBar; 
 private Config config;
@@ -17,15 +18,18 @@ private Notepad.Counter counter;
 private int fontSize;
 private final int maxFontSize=60;
 private final int minFontSize=8;
+private int currentZoomPercentage=100;
+private int stepPercentage=25;
 private JMenu viewMenu;
 private JMenu zoomMenu;
 private JMenuItem zoomInMenuItem,zoomOutMenuItem;
 private JCheckBoxMenuItem statusMenuItem;
 
-public ViewMenuManager(Notepad notepad,JTextArea textArea,JFrame fakeParent,JMenuBar menuBar,Config config,FileHandler fileHandler,Notepad.Counter counter)
+public ViewMenuManager(Notepad notepad,JTextArea textArea,StatusPanel statusPanel,JFrame fakeParent,JMenuBar menuBar,Config config,FileHandler fileHandler,Notepad.Counter counter)
 {
 this.textArea=textArea;
 this.notepad=notepad;
+this.statusPanel=statusPanel;
 this.fakeParent=fakeParent;
 this.menuBar=menuBar;
 this.config=config;
@@ -41,8 +45,8 @@ menuBar.add(viewMenu);
 private void initComponents()
 {
 statusMenuItem=new JCheckBoxMenuItem("Status");
-zoomInMenuItem=new JMenuItem("");
-zoomOutMenuItem=new JMenuItem("");
+zoomInMenuItem=new JMenuItem("Zoom In");
+zoomOutMenuItem=new JMenuItem("Zoom Out");
 zoomMenu=new JMenu("Zoom");
 viewMenu=new JMenu("View");
 }
@@ -55,7 +59,15 @@ viewMenu.add(statusMenuItem);
 }
 private void setConfigSettings()
 {
-if(this.config.statusBar)statusMenuItem.doClick();
+if(this.config.statusBar)
+{
+statusMenuItem.setSelected(true);
+notepad.setStatusBarPanelVisibility(this.config.statusBar);
+}
+else
+{
+notepad.setStatusBarPanelVisibility(this.config.statusBar);
+}
 }
 
 private void bindShortcutKeys()
@@ -72,27 +84,68 @@ notepad.setStatusBarPanelVisibility(isSelected);
 });
 
 
-
 zoomInMenuItem.addActionListener(ev->{
-fontSize=textArea.getFont().getSize();
-if(fontSize<maxFontSize)
+float currentFontSize=ViewMenuManager.this.fontSize;
+int increasedFontSize=textArea.getFont().getSize();
+if(increasedFontSize<maxFontSize)
 {
-fontSize+=2;//increment font size 
+increasedFontSize+=2;//increment font size 
 Font selectedFont=textArea.getFont();
-textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),fontSize));
+float per=(float)(increasedFontSize/currentFontSize);
+textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),increasedFontSize));
+statusPanel.updateZoomPercent((int)(per*100));
 }
 });
 zoomOutMenuItem.addActionListener(ev->{
-fontSize=textArea.getFont().getSize();
-if(fontSize>minFontSize)
+float currentFontSize=ViewMenuManager.this.fontSize;
+int decreasedFontSize=textArea.getFont().getSize();
+
+if(decreasedFontSize>minFontSize)
 {
-fontSize-=2;//decrement font size 
+decreasedFontSize-=2;//decrement font size 
 Font selectedFont=textArea.getFont();
-textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),fontSize));
+float per=(float)(decreasedFontSize/currentFontSize);
+textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),decreasedFontSize));
+statusPanel.updateZoomPercent((int)(per*100));
 }
 });
 
 
+/*
+
+zoomInMenuItem.addActionListener(ev->{
+float perc=(float)(currentZoomPercentage+stepPercentage)/100;
+int increasedFontSize=(int)Math.round(perc*ViewMenuManager.this.fontSize);
+
+if(increasedFontSize<maxFontSize)
+{
+currentZoomPercentage+=stepPercentage;
+Font selectedFont=textArea.getFont();
+textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),increasedFontSize));
+statusPanel.updateZoomPercent(currentZoomPercentage);
+}
+});
+zoomOutMenuItem.addActionListener(ev->{
+float perc=(float)(currentZoomPercentage-stepPercentage)/100;
+int decreasedFontSize=(int)Math.floor(perc*ViewMenuManager.this.fontSize);
+
+if(decreasedFontSize>minFontSize)
+{
+currentZoomPercentage-=stepPercentage;
+Font selectedFont=textArea.getFont();
+textArea.setFont(new Font(selectedFont.getName(),selectedFont.getStyle(),decreasedFontSize));
+statusPanel.updateZoomPercent(currentZoomPercentage);
+}
+});
+
+*/
 
 }
+public void updateFontSize(int fontSize)
+{
+this.fontSize=fontSize;
+statusPanel.updateZoomPercent(100);
+this.currentZoomPercentage=100;
+}
+
 }
