@@ -39,6 +39,7 @@ this.config=config;
 this.fileHandler=fileHandler;
 this.counter=counter;
 this.undoManager=undoManager;
+this.searchManager=new SearchManager();
 searchContext=new SearchContext();
 searchContext.findPreviousSearchedText=config.lastSearchedText;
 initComponents();
@@ -206,11 +207,11 @@ wrapAroundCheckBox.setBounds(10,40+90,100,20);
 matchCaseCheckBox.setSelected(config.matchCase);
 wrapAroundCheckBox.setSelected(config.wrapAround);
 matchCaseCheckBox.addActionListener(ev1->{
-notepad.config.matchCase=matchCaseCheckBox.isSelected();
+config.matchCase=matchCaseCheckBox.isSelected();
 });
 
 wrapAroundCheckBox.addActionListener(ev1->{
-notepad.config.wrapAround=wrapAroundCheckBox.isSelected();
+config.wrapAround=wrapAroundCheckBox.isSelected();
 });
 
 
@@ -348,6 +349,8 @@ searchContext.selectedTextEndIndex=textArea.getSelectionEnd();
 findField.setText(selectedText);
 searchContext.findPreviousSearchedText=selectedText;
 config.lastSearchedText=searchContext.findPreviousSearchedText;
+
+
 findField.selectAll();
 }
 
@@ -414,11 +417,11 @@ wrapAroundCheckBox.setSelected(config.wrapAround);
 
 
 matchCaseCheckBox.addActionListener(ev1->{
-notepad.config.matchCase=matchCaseCheckBox.isSelected();
+config.matchCase=matchCaseCheckBox.isSelected();
 });
 
 wrapAroundCheckBox.addActionListener(ev1->{
-notepad.config.wrapAround=wrapAroundCheckBox.isSelected();
+config.wrapAround=wrapAroundCheckBox.isSelected();
 });
 
 
@@ -500,6 +503,7 @@ findField.selectAll();
 
 findNextButton.addActionListener(e->{
 String searchText=findField.getText();
+config.lastSearchedText=searchText;
 boolean matchCase=matchCaseCheckBox.isSelected();
 boolean wrapAround=wrapAroundCheckBox.isSelected();
 boolean directionUp=upRadioButton.isSelected();
@@ -542,6 +546,8 @@ if(selectedText!=null && !selectedText.isEmpty())
 findField.setText(selectedText);
 searchContext.findPreviousSearchedText=selectedText;
 config.lastSearchedText=searchContext.findPreviousSearchedText;
+
+
 findField.selectAll();
 }
 
@@ -578,6 +584,7 @@ if(selectedText!=null && selectedText.trim().length()>0)
 {
  searchContext.findPreviousSearchedText=selectedText;
 config.lastSearchedText=searchContext.findPreviousSearchedText;
+
 
 }
 boolean b=searchManager.performFind(notepad,textArea,scrollPane,searchContext,searchContext.findPreviousSearchedText,config.matchCase,config.wrapAround,true,true);
